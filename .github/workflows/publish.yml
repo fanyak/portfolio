@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: read
   pages: write
   id-token: write
 
@@ -14,13 +15,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the site
-      run: |
-        mkdir _site
-        cp -rf site/* _site/
-    - name: Upload artifact
+    # - uses: actions/checkout@v4
+    # - name: Build the site
+    #   run: |
+    #     mkdir _site
+    #     cp -rf site/* _site/
+    # - name: Upload artifact
+    #   uses: actions/upload-pages-artifact@v3
+    - name: Check out repository
+      uses: actions/checkout@v4
+    - name: Upload site
       uses: actions/upload-pages-artifact@v3
+      with:
+        path: site/
   deploy:
     environment:
       name: github-pages
