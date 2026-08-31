@@ -28,7 +28,7 @@
 /*https://assets.ngrok.com/fonts/jetbrains-mono/jetbrains-mono-vf.woff2*/
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("fonts/jetbrains-mono/jetbrains-mono-vf.woff2")
+  src: url("fonts/jetbrains/jetbrains-mono-vf.woff2")
        format("woff2");
   font-weight: 100 800;
   font-style: normal;
