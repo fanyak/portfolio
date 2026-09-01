@@ -1,0 +1,23 @@
+{
+	"name": "profile",
+	"version": "1.0.0",
+	"description": "portfolio",
+	"keywords": [
+		"portfolio"
+	],
+	"homepage": "https://github.com/fanyak/portfolio#readme",
+	"bugs": {
+		"url": "https://github.com/fanyak/portfolio/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fanyak/portfolio.git"
+	},
+	"license": "ISC",
+	"author": "Fani Akritidou",
+	"type": "module",
+	"main": "/site/index.html",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	}
+}

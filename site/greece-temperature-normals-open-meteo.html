@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+   <!--REF https://matuzo.at/blog/2026/html-boilerplate -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="text-scale" content="scale">
+
+  <title>Recreating a Data-Driven Temperature Normal for Greece in Python</title>
+  <link  rel="preload" href="main.css" as="style">
+  <!-- <link rel="preload" href="assets/bg.avif" as="image" type="image/avif" /> -->
+  <link rel="stylesheet" href="main.css">
+  <!--
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="canonical" href="https://web.site/page">
+  <link rel="alternate" type="text/markdown" href="https://web.site/page.md">
+  <link rel="me" href="https://mastodon.social/@username">
+  <link rel="site.standard.publication" href="at://[DID]/site.standard.publication/[RKEY]">
+
+  <meta name="description" content="Page description">
+  <meta property="og:image" content="https://web.site/sm.jpg">
+  <meta property="og:url" content="https://web.site/page">
+  <meta name="theme-color" content="#FF5302">
+  <meta property="fediverse:creator" content="@user@mastodon.social" > -->
+</head>
+
+<body> 
+<div style="position:absolute; top: 0; bottom:0;left:0; right:0; z-index:-1;">
+  <img decoding="auto" width="2880" height="2050" sizes="(min-width: 1920px) 100vw, (min-width: 1440px) and (max-width: 1919.98px) 100vw, (min-width: 1200px) and (max-width: 1439.98px) 100vw, (min-width: 810px) and (max-width: 1199.98px) 100vw, (max-width: 809.98px) 100vw" srcset="https://framerusercontent.com/images/FlKMe2C84oIukHZ4vGWy3Htrs.png?scale-down-to=512&amp;width=2880&amp;height=2050 512w,https://framerusercontent.com/images/FlKMe2C84oIukHZ4vGWy3Htrs.png?scale-down-to=1024&amp;width=2880&amp;height=2050 1024w,https://framerusercontent.com/images/FlKMe2C84oIukHZ4vGWy3Htrs.png?scale-down-to=2048&amp;width=2880&amp;height=2050 2048w,https://framerusercontent.com/images/FlKMe2C84oIukHZ4vGWy3Htrs.png?width=2880&amp;height=2050 2880w" src="https://framerusercontent.com/images/FlKMe2C84oIukHZ4vGWy3Htrs.png?width=2880&amp;height=2050" alt="" style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover">
+</div>
+
+
+  <header class="site-header">
+    <div class="nav-container">
+      <!-- <a href="#" class="logo">your<span>brand</span></a> -->
+
+      <nav class="nav-links">
+        <a href="#">Products</a>
+        <a href="#">Developers</a>
+        <a href="#">Resources</a>
+        <a href="#">Blog</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- <a class="btn-nav" href="#">Log in</a>
+        <a class="btn-nav btn-primary" href="#">Sign up</a> -->
+      </div>
+    </div>
+  </header>
+
+
+  <main class="page">
+   
+    <div class="article-shell">
+
+      <header class="article-header">
+        <span class="article-date">Aug 11, 2026</span>
+        <h1 class="article-title">
+          Recreating a Data-Driven Temperature Normal for Greece
+        </h1>
+
+        <div class="article-meta">
+          <span class="author-name">Fani Akritidou</span>
+
+          <span class="meta-separator">•</span>
+
+          <span>8 min read</span>
+
+          <span class="meta-separator">•</span>
+
+          <span>Data Analysis</span>
+        </div>
+      </header>
+
+
+      <article class="article-content">
+
+        <p>
+          Building a national temperature anomaly chart in <strong>Python</strong>, with <a href="https://data.gov.gr/" target="new">public sector</a> and Open-Meteo data, using cross-validated smoothing.
+        </p>
+        <p class="article-note">
+          <strong>Note</strong>: This project was inspired by 
+          <a href="https://dominicroye.github.io/blog/spain-temperature-normals-openmeteo/" target="new">Dominic Royé's <i>A data-driven normal for the Spain temperature chart</i></a>.
+          That article creates an anomaly chart for Spain using <strong>R</strong>. It is a great article and I urge you to read it!
+          Here I recreate the methodology in <strong>Python</strong>, with data from greek meteorological stations.
+        </p>
+
+        <h2>Setting the Goal</h2>
+
+        <p>
+         Comparisons of daily temperatures provide little information about how unusual temperatures are between years. 
+          What is actually informative is a <strong>smooth</strong> daily climatological reference, which allows us to compare data without the day-to-day noise. 
+          Creating a <strong>climatological normal</strong> against which we can compare the daily mean temperature is the theme of Dominic Royé's article.
+        </p>
+          
+        <p>The challenge then is to figure out how to <strong>smooth a daily climatological reference</strong>
+           without either following the noise or flattening real features. This is a <strong>model-selection problem</strong> where we need to choose between 
+          families of smoothers. Our preferred families are two: <strong>loess</strong> and <strong>harmonic</strong> regression.
+          Both of these smoothers can be tuned and (re-)evaluated in a cross-validation process.
+
+        </p> 
+      
+        <h3>Tools and Data</h3>
+        <p>This project tries to <i>port</i> the original methodology from R to Python. I used the following packages: 
+          <ul>
+            <li><strong>pandas</strong> and <strong>NumPy</strong> for data manipulation</li>
+            <li><strong>Matplotlib and Seaborn</strong> for visualization</li>
+            <li><strong>statsmodels</strong> for LOWESS/LOESS smoothing and regression</li>
+            <li><strong>scikit-learn</strong> for K-fold cross-validation</li>           
+          </ul>
+        </p>
+        <div class="code-demo">
+          <div class="code-demo-header">
+            <!-- imports -->
+            <button title="Copy to Clipboard" class="code-copy-button" id="c1b"><i class="bi"></i></button>
+          </div>
+          <pre>
+            <code  id="c1">
+              import pandas as pd
+              import numpy as np
+              import matplotlib.pyplot as plt
+              import seaborn as sns
+            </code>
+          </pre>
+        </div>
+
+
+        <h2>Interactive content</h2>
+
+        <div class="demo">
+          <div class="demo-header">
+            <span class="demo-title">
+              Interactive Example
+            </span>
+          </div>
+
+          <div class="demo-body">
+            Your visualization here
+          </div>
+
+          <div class="demo-footer">
+            <button class="btn btn-light">
+              Previous
+            </button>
+
+            <button class="btn btn-dark">
+              Next
+            </button>
+          </div>
+        </div>
+
+
+      </article>
+
+    </div>
+  </main>
+
+  <script>
+    function copy(c) {
+      let copyText = document.querySelector(`#${c}`);
+      let cp = document.querySelector("#cp");     
+      v = copyText.innerHTML;
+      cp.value = v;
+      cp.select();
+      document.execCommand("copy");
+    }
+
+    document.querySelector("#c1b").addEventListener("click", copy.bind(null, 'c1'));
+  </script>
+
+  <input type="text" id="cp" style="position:fixed; left:-100px">
+
+</body>
+</html>
