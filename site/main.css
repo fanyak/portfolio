@@ -334,7 +334,7 @@ select {
 
 /* Paragraph typography */
 .article-content p {
-	margin-bottom: 28px;
+	margin-bottom: 1.2rem;
 
 	font-family: var(--font-editorial);
 	font-size: clamp(1.1rem, 0.8rem + 0.75vw, 1.25rem);
@@ -436,8 +436,17 @@ select {
    CODE
 ========================================= */
 
+details > summary {
+	margin: 0.5rem 0;
+	display: list-item;
+	font-size: 1.2rem;
+
+	color: var(--accent);
+	cursor: pointer;
+}
+
 .article-content code {
-	background: var(--code-bg);
+	background: var(--accent-light);
 
 	padding: 2px 6px;
 
@@ -449,7 +458,7 @@ select {
 
 .article-content pre {
 	margin: 2rem 0;
-	padding: 0.5rem;
+	padding: 0 0.5rem;
 
 	overflow-x: auto;
 
@@ -669,7 +678,7 @@ select {
 ========================================= */
 
 .code-demo {
-	margin: 1rem 0;
+	margin: 0.8rem 0;
 
 	border-radius: var(--radius-lg);
 	border: 1px solid var(--border);
@@ -1076,6 +1085,10 @@ select {
 .image-container img {
 	border-radius: 3px;
 	transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.image-container.zoom-toggle {
+	cursor: zoom-out;
 }
 
 .image-container.zoom-toggle img {

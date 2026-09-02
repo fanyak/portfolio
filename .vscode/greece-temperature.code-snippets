@@ -1,0 +1,29 @@
+{
+	"Code Demo Block": {
+		"scope": "html",
+		"prefix": "code-demo",
+		"description": "Insert the code demo HTML block used in the Greece temperature article",
+		"body": [
+      "<details>",
+      "<summary>Code</summary>",
+			"<div class=\"code-demo\">",
+			"\t<div class=\"code-demo-header\">",
+			"\t\t${1:head -n 10 /stations_data/meteo_data/stations_list.csv}",
+			"\t\t<button",
+			"\t\t\ttitle=\"Copy to Clipboard\"",
+			"\t\t\tclass=\"code-copy-button\"",
+			"\t\t\tid=\"${2:c3b}\"",
+			"\t\t>",
+			"\t\t\t<i class=\"bi\"></i>",
+			"\t\t</button>",
+			"\t</div>",
+			"\t<pre>",
+			"\t\t<code id=\"${3:c3}\">",
+			"${4:stations,latitude,longitude,altitude}",
+			"\t\t</code>",
+			"\t</pre>",
+			"</div>",
+      "</details>"
+		]
+	}
+}

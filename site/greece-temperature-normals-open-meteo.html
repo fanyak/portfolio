@@ -163,18 +163,21 @@
 							<li><strong>scikit-learn</strong> for K-fold cross-validation</li>
 						</ul>
 					</p>
-					<div class="code-demo">
-						<div class="code-demo-header">
-							<!-- imports -->
-							<button
-								title="Copy to Clipboard"
-								class="code-copy-button"
-								id="c1b"
-							>
-								<i class="bi"></i>
-							</button>
-						</div>
-						<pre>
+					<p>
+						<details>
+							<summary>Code</summary>
+							<div class="code-demo">
+								<div class="code-demo-header">
+									<!-- imports -->
+									<button
+										title="Copy to Clipboard"
+										class="code-copy-button"
+										id="c1b"
+									>
+										<i class="bi"></i>
+									</button>
+								</div>
+								<pre>
             <code id="c1">
 import pandas as pd
 import numpy as np
@@ -182,7 +185,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
             </code>
           </pre>
-					</div>
+							</div>
+						</details>
+					</p>
 					<p>
 						All the code for this article is available on
 						<a
@@ -224,9 +229,9 @@ curl -L -o stations_data.zip https://data.gov.gr/dataset/cee4f7c1-68b3-4014-b7c7
 					</p>
 					<p>
 						Once we unzip the response output we get a <code>.csv</code> file
-						for each of the 54 stations, as well as a file with the list of the
-						available stations along with their latititude and longitude. Here
-						are the first 10 entries from that list:
+						for each of the 54 stations, as well as a file with identifying
+						information for each station (name, latititude, longitude). Here are
+						the first 10 entries from the latter file:
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -250,9 +255,10 @@ drama,41.117828,24.143734,83.0
 
 					<h3>Performing EDA on the data</h3>
 					<p>
-						Now we can check the structure of the data, whether it is valid,
-						whether there are missing or duplicated values. Let's take a look at
-						the <code>.csv</code> file for my hometown, Thessaloniki.
+						Time to check the structure of the meteorological data for each
+						station, focusing on invalid, missing or duplicated values. I
+						started by peeking at the <code>.csv</code> file for my hometown's
+						station, Thessaloniki.
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -277,20 +283,23 @@ Date,T_mean,T_max,T_min,RH_mean,RH_max,RH_min,Prs_mean,Prs_max,Prs_min,Ac_R,WS_m
 					<p>Missing values galore!</p>
 					<p>
 						Loading the file to a <code>pandas</code> DataFrame helps with the
-						clean-up. Since empty values are denoted with 3 dashes (---) let's
-						also map those to <code>NAN</code> to properly count them.
+						clean-up. Since empty values are denoted with 3 dashes (---) I
+						mapped those to <code>NaN</code>:
 					</p>
-					<div class="code-demo">
-						<div class="code-demo-header">
-							<button
-								title="Copy to Clipboard"
-								class="code-copy-button"
-								id="c3b"
-							>
-								<i class="bi"></i>
-							</button>
-						</div>
-						<pre>
+					<p>
+						<details>
+							<summary>Code</summary>
+							<div class="code-demo">
+								<div class="code-demo-header">
+									<button
+										title="Copy to Clipboard"
+										class="code-copy-button"
+										id="c3b"
+									>
+										<i class="bi"></i>
+									</button>
+								</div>
+								<pre>
               <code id="c3">
 def mapToNan(col: pd.Series) -> pd.Series:
 return col.replace({'---':np.nan})
@@ -299,7 +308,9 @@ thessaloniki = pd.read_csv('/stations_data/meteo_data/stations_data/thessaloniki
 thessaloniki_clean = thessaloniki.apply(mapToNan, axis = 1)
               </code>
             </pre>
-					</div>
+							</div>
+						</details>
+					</p>
 					<p>Let's see what we got:</p>
 					<div class="code-demo">
 						<div class="code-demo-header">thessaloniki_clean.info()</div>
@@ -333,7 +344,7 @@ memory usage: 559.4+ KB
 						Depending on the column there seem to be up to 793 missing values.
 						<br>
 						Since we are only interested in numeric columns here, we can run the
-						following code to see how many rows have values missing in all of
+						following code to see how many rows have values missing from all of
 						the numeric columns.
 					</p>
 					<div class="code-demo">
@@ -355,8 +366,8 @@ all_null_rows = thessaloniki_clean[thessaloniki_clean[numeric_cols].isna().all(a
 					<p>
 						There are 787 rows with missing values in all the numeric columns
 						for station Thessaloniki. Given that the data can be split by year
-						using the <code>date</code> column, we need to check whether the
-						missing values belong to specific years.<br>
+						using the <code>date</code> column, we can check whether the missing
+						values belong to specific years.<br>
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -377,9 +388,9 @@ thessaloniki_clean['date'].dt.year.unique()
 					</div>
 					<p>
 						This gives us all the years from 2010 to 2023. With a little
-						wrangling (which you can check on the original code on github) we
-						can see that for 2010 and 2011 we have year-round missing values in
-						all the columns. For 2012 only the values for 52 days are missing.
+						wrangling (which you can read through on github) we can see that for
+						2010 and 2011 we have year-round missing values in all the columns.
+						For 2012 only the values for 52 days are missing.
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -401,8 +412,8 @@ thessaloniki_clean['date'].dt.year.unique()
 						We now need to load and merge the <code>.csv</code> data for the
 						rest of the stations to see if there is a pattern in missing values
 						accross the cities. <br>
-						To help with that, we will create two new columns:
-						<code>Year</code>, so that we can shortcut
+						To help with that, I created two new columns:
+						<code>Year</code>, so that we can have a shortcut for
 						<code>column.dt.year</code>
 						and <code>Station</code> so that we know which
 						<code>.csv</code>
@@ -410,17 +421,22 @@ thessaloniki_clean['date'].dt.year.unique()
 					</p>
 
 					<h3>Load, merge, clean-up, encode</h3>
-					<div class="code-demo">
-						<div class="code-demo-header">
-							<button
-								title="Copy to Clipboard"
-								class="code-copy-button"
-								id="c6b"
-							>
-								<i class="bi"></i>
-							</button>
-						</div>
-						<pre>
+					<p>
+						We load the data from each of the <code>.csv</code> files
+						sequentially and merge it into one dataFrame
+						<details>
+							<summary>Code</summary>
+							<div class="code-demo">
+								<div class="code-demo-header">
+									<button
+										title="Copy to Clipboard"
+										class="code-copy-button"
+										id="c6b"
+									>
+										<i class="bi"></i>
+									</button>
+								</div>
+								<pre>
               <code id="c6">
 def load_data() -> pd.DataFrame:
   stations=pd.read_csv('/stations_data/meteo_data/stations_list.csv', header=0, index_col=None)
@@ -438,25 +454,31 @@ def load_data() -> pd.DataFrame:
   return pd.concat(dfs, axis = 0, ignore_index = True)
               </code>
             </pre>
-					</div>
-					<div class="code-demo">
-						<div class="code-demo-header">
-							<button
-								title="Copy to Clipboard"
-								class="code-copy-button"
-								id="c7b"
-							>
-								<i class="bi"></i>
-							</button>
-						</div>
-						<pre>
+							</div>
+						</details>
+					</p>
+					<p>
+						Next, let's encode the numerical and categorical columns
+						<details>
+							<summary>Code</summary>
+							<div class="code-demo">
+								<div class="code-demo-header">
+									<button
+										title="Copy to Clipboard"
+										class="code-copy-button"
+										id="c7b"
+									>
+										<i class="bi"></i>
+									</button>
+								</div>
+								<pre>
               <code id="c7">
 def encode_data(df: pd.DataFrame) -> pd.DataFrame:
   # Define column groups
   numeric_cols = ["t_mean", "t_max", "t_min", "rh_mean", "rh_max", "rh_min", "prs_mean", "prs_max", "prs_min", "ac_r", "ws_mean", "wg"]
   categorical_cols = ["dwd", "station"]
 
-  # replace '---' with NaN for the entire DataFrame at once
+  # replace '---' with NaN for the entire DataFrame in one go
   df = df.replace('---', np.nan)
 
   # convert numeric columns and raise error for value that can't be coerced
@@ -478,7 +500,9 @@ def encode_data(df: pd.DataFrame) -> pd.DataFrame:
   return df.sort_values(by=['station', 'date'])
               </code>
             </pre>
-					</div>
+							</div>
+						</details>
+					</p>
 					<p>Here is the merged and encoded DataFrame</p>
 					<div class="code-demo">
 						<div class="code-demo-header">data.info()</div>
@@ -514,13 +538,13 @@ memory usage: 18.4 MB
 						Checking again for all null rows we can see that the combined
 						station data has 9796 rows were all numeric data is missing. Time
 						for a clean-up!<br>
-						Here is where the Panda's <code>pivot</code> method comes in handy.
-						We want a frame where we can see the count of missing values by
+						At this point the Panda's <code>pivot</code> method comes in handy.
+						what we want is a frame where we can see the total count of missing
+						values by
 						<code>Year</code>
-						and <code>Station</code>. This is similar to Excel's pivot table.
-						You can check the python code for more details. As a summarization I
-						created a heatmap to show which stations have the most missing
-						values by year.
+						and <code>Station</code>. This is similar to Excel's pivot table. As
+						a summarization of the process I created a heatmap to show which
+						stations stand out as having the most missing values by year.
 					</p>
 					<p>
 						<div class="image-container">
@@ -531,7 +555,7 @@ memory usage: 18.4 MB
 					</p>
 					<p>
 						We can see that Karpenisitown station has missing data for more than
-						300 days in all years between 2010 and 2017. Livadeia station has
+						350 days in all years between 2010 and 2017. Livadeia station has
 						missing values for years 2010 through to 2013, and there are a
 						couple of other stations that have missing values for years
 						2010-2012.
@@ -540,15 +564,15 @@ memory usage: 18.4 MB
 						We can't use techniques such as backward / forward filling for the
 						above. We can only drop either the stations or the years. Since
 						Karpenisitown has most of its values missing, I dropped this station
-						entirely from the data. Additionally, data for Lindos station is
-						missing for the first 3 years (2010-2013). I dropped this station as
+						entirely from the data. Similarly, since data for Lindos station is
+						missing for the first 3 years (2010-2013), I dropped this station as
 						well.
 					</p>
 					<p>
-						As a final call I decided to keep data from 2012 onwards for all
-						other stations, fill forwards and backwards for up to 3 days, and
-						then drop any remaining missing values. The final dataset contains
-						data from 52 stations between years 2012 and 2023, a total of 224603
+						Lastly, I decided to keep data from 2012 onwards for all other
+						stations, fill forwards and backwards for up to 3 days, and then
+						drop any remaining missing values. The final dataset contains data
+						from 52 stations between years 2012 and 2023, a total of 224603
 						rows.
 					</p>
 
@@ -607,7 +631,10 @@ memory usage: 18.4 MB
 			document.querySelectorAll(".image-container"),
 		);
 		image_snippets.forEach((el) => {
-			el.addEventListener("click", zoomToggle, {});
+			el.addEventListener("click", zoomToggle);
+			el.addEventListener("mouseleave", () => {
+				el.classList.remove("zoom-toggle");
+			});
 		});
 
 		document.body.addEventListener("click", function () {
