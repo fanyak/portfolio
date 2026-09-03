@@ -333,7 +333,8 @@ select {
 }
 
 /* Paragraph typography */
-.article-content p, .article-content .block {
+.article-content p,
+.article-content .block {
 	margin-bottom: 1.2rem;
 
 	font-family: var(--font-editorial);
