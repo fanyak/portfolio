@@ -113,7 +113,7 @@
 						<strong>recently redesigned National Data Portal</strong>, as well
 						as in building complex charts with Python. -->
 					</p>
-
+					<!-- Setting the Goal-->
 					<h2>Setting the Goal</h2>
 					<p>
 						Comparing <strong>daily</strong> temperature data provides little
@@ -161,6 +161,11 @@
 								for LOWESS/LOESS smoothing and regression
 							</li>
 							<li><strong>scikit-learn</strong> for K-fold cross-validation</li>
+							<li>
+								<strong>openmeto</strong>
+								to get the data for the year 2025
+							</li>
+							<li><strong>asyncio</strong> for executing coroutines</li>
 						</ul>
 					</div>
 					<div class="block">
@@ -193,7 +198,7 @@
 							>.
 						</em>
 					</p>
-
+					<!-- Getting the data -->
 					<h2>Getting Data for Greece</h2>
 					<p>
 						The
@@ -238,6 +243,11 @@
             	<code id="c1.1"></code>
           	</pre>
 					</div>
+
+					<p>
+						The data from the National Data Portal will servea as the reference
+						set.
+					</p>
 
 					<h3>Performing EDA on the data</h3>
 					<p>
@@ -441,10 +451,62 @@
 					<p>
 						Lastly, I decided to keep data from 2012 onwards for all other
 						stations, fill forwards and backwards for up to 3 days, and then
-						drop any remaining missing values. The final dataset contains data
-						from 52 stations between years 2012 and 2023, a total of 224603
-						rows.
+						drop any remaining missing values.
 					</p>
+					<p>
+						The final dataset contains data from 52 stations between years 2012
+						and 2023, a total of 224603 rows. This will be our
+						<strong>Reference Set</strong>
+					</p>
+					<p>
+						Since we will only need the daily mean temperature measurements, the
+						rest of the numeric columns can be dropped. Additionally, I created
+						2 more helper columns, day and month because they will help with
+						computations.
+					</p>
+
+					<div class="code-demo">
+						<div class="code-demo-header">
+							<button
+								title="Copy to Clipboard"
+								class="code-copy-button"
+								id="c9b"
+							>
+								<i class="bi"></i>
+							</button>
+						</div>
+						<pre>
+								<code id="c9"></code>
+							</pre>
+					</div>
+
+					<h3>Getting data for 2025 from Open Meteo</h3>
+					<p>
+						Now that we have our reference set for the years 2012-2023, we need
+						more recent data to compare against it. To get data for the stations
+						that are in the Reference Set I use the longitude and latitude
+						information for each station as the request parameters to the Open
+						Meteo server.
+					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c10b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c10"></code>
+						</pre>
+						</div>
+					</details>
+
+					<h2>.............</h2>
 
 					<h2>Interactive content</h2>
 

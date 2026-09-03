@@ -11,6 +11,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import openmeteo-requests
+import asyncio
 </template>
 
 <template id="c1.1-template">
@@ -164,7 +166,68 @@ Data columns (total 16 columns):
 dtypes: category(2), datetime64[ns](1), float32(12), int32(1)
 memory usage: 18.4 MB
 </template>
+<template id="c9-template">
+national_mean_temperature_2012_2023 = data_final[['date','year', 'station','t_mean']].reset_index(drop=True)
+national_mean_temperature_2012_2023.loc[:, ['yd']] = national_mean_temperature_2012_2023.date.dt.day_of_year
+national_mean_temperature_2012_2023.loc[:, ['month']] = national_mean_temperature_2012_2023.date.dt.month_name()
+</template>
+<template id="c10-template">
+async def get_open_meteo_data(stations: pd.DataFrame):
+    openmeteo_daily_data = []
+    # Use the AsyncClient
+    openmeteo = openmeteo_requests.AsyncClient()
+
+    # Use the archive API for 2025 (historical as of July 2026)
+    url = "https://archive-api.open-meteo.com/v1/archive"
+
+    latitudes_list = stations['latitude'].tolist()
+    longitudes_list = stations['longitude'].tolist()
+    station_names_list = stations['stations'].tolist()
+
+    step = 2
+    for c in range(0, len(latitudes_list), step):
+        params = {
+            "latitude": latitudes_list[c:c+step],
+            "longitude": longitudes_list[c:c+step],
+            "start_date": "2025-01-01",
+            "end_date": "2025-12-31",
+            "daily": ["temperature_2m_max", "temperature_2m_min", "temperature_2m_mean"]
+            # default timezone is gmt
+        }
+
+        responses = await openmeteo.weather_api(url, params=params)
+
+        for i, response in enumerate(responses):
+
+            station_name = station_names_list[c:c+step][i]
+            daily = response.Daily()
+
+            # Create a date range that matches the length of the returned data
+
+            print(f"Timezone difference to GMT+0: {response.UtcOffsetSeconds()}s")
+            print(daily.Time())
+            print(daily.TimeEnd())
+            print(daily.Interval())
 
 
+            temp_mean = daily.Variables(2).ValuesAsNumpy()
+            date_range = pd.date_range(
+              start = pd.to_datetime(daily.Time(), unit = "s", utc = True),
+              end =  pd.to_datetime(daily.TimeEnd(), unit = "s", utc = True),
+              freq = pd.Timedelta(seconds = daily.Interval()),
+              inclusive = "left"
+            )
+
+            daily_data = {
+                "date": date_range,
+                "station": station_name,
+                "t_mean": temp_mean,
+                "t_max": daily.Variables(0).ValuesAsNumpy(),
+                "t_min": daily.Variables(1).ValuesAsNumpy()
+            }
+            openmeteo_daily_data.append(pd.DataFrame(data=daily_data))
+
+    return openmeteo_daily_data
+</template>
 </body>
 </html>
