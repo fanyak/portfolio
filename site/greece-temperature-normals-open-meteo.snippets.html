@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <title>article snippets</title>
+</head>
+<body>
+
+<template id="c1-template">
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+</template>
+
+<template id="c1.1-template">
+stations,latitude,longitude,altitude
+aghiosnikolaos,35.187909,25.715552,30.0
+alexandroupolis,40.876310,25.858280,69.0
+amfiklia,38.611420,22.640530,245.0
+argos,37.628115,22.713401,38.0
+arta,39.172784,20.999435,50.0
+athens,37.978408,23.715448,50.0
+chania,35.533365,24.068349,137.0
+dion,40.223638,22.470709,50.0
+drama,41.117828,24.143734,83.0
+</template>
+
+<template id="c1.2-template">
+Date,T_mean,T_max,T_min,RH_mean,RH_max,RH_min,Prs_mean,Prs_max,Prs_min,Ac_R,WS_mean,DWD,WG
+2010-01-01,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-02,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-03,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-04,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-05,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-06,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-07,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-08,---,---,---,---,---,---,---,---,---,---,---,---,---
+2010-01-09,---,---,---,---,---,---,---,---,---,---,---,---,---
+</template>
+
+<template id="c2-template">
+curl -L -o stations_data.zip https://data.gov.gr/dataset/cee4f7c1-68b3-4014-b7c7-926584b7bfe5/resource/ca01bd85-1d39-47fc-ae77-4692b7d5b87e/download/stations-data-ers00i6z.zip
+</template>
+
+<template id="c3-template">
+def mapToNan(col: pd.Series) -> pd.Series:
+  return col.replace({'---': np.nan})
+
+thessaloniki = pd.read_csv('/stations_data/meteo_data/stations_data/thessaloniki.csv', header=0,index_col=None)
+thessaloniki_clean = thessaloniki.apply(mapToNan, axis=1)
+</template>
+
+<template id="c3.1-template">  
+class 'pandas.core.frame.DataFrame'
+RangeIndex: 5113 entries, 0 to 5112
+Data columns (total 14 columns):
+#   Column    Non-Null Count  Dtype 
+---  ------    --------------  ----- 
+0   date      5113 non-null   object
+1   t_mean    4317 non-null   object
+2   t_max     4317 non-null   object
+3   t_min     4317 non-null   object
+4   rh_mean   4320 non-null   object
+5   rh_max    4320 non-null   object
+6   rh_min    4320 non-null   object
+7   prs_mean  4320 non-null   object
+8   prs_max   4320 non-null   object
+9   prs_min   4320 non-null   object
+10  ac_r      4320 non-null   object
+11  ws_mean   4326 non-null   object
+12  dwd       4322 non-null   object
+13  wg        4326 non-null   object
+dtypes: object(14)
+memory usage: 559.4+ KB
+</template>
+
+<template id="ca-template">
+all_null_rows = thessaloniki_clean[thessaloniki_clean[numeric_cols].isna().all(axis=1)]
+</template>
+
+<template id="c4-template">
+thessaloniki_clean.date = pd.to_datetime(thessaloniki_clean.date,format="%Y-%m-%d")
+thessaloniki_clean['date'].dt.year.unique()
+</template>
+
+<template id="c5-template">
+year	missing count
+2010	365
+2011	365
+2012	52
+2021	4
+2014	1    
+</template>
+
+<template id="c6-template">
+def load_data() -> pd.DataFrame:
+  stations = pd.read_csv(
+    '/stations_data/meteo_data/stations_list.csv',
+    header=0,
+    index_col=None,
+  )
+  station_names = stations['stations'].unique()
+  dfs = []
+
+  for name in station_names:
+    station_df = pd.read_csv(
+        f'/stations_data/meteo_data/stations_data/{name}.csv',
+        header=0,
+        index_col=None,
+    )
+    station_df.loc[:, 'station'] = name
+    station_df.columns = pd.Index(
+        [colname.replace(" ", "_").lower() for colname in station_df.columns]
+    )
+    dfs.append(station_df)
+
+  return pd.concat(dfs, axis=0, ignore_index=True)
+</template>
+
+<template id="c7-template">
+def encode_data(df: pd.DataFrame) -> pd.DataFrame:
+  numeric_cols = ["t_mean", "t_max",  "t_min", "rh_mean", "rh_max", "rh_min", "prs_mean", "prs_max", "prs_min", "ac_r", "ws_mean", "wg"]
+  categorical_cols = ["dwd", "station"]
+
+  df = df.replace('---', np.nan)
+
+  for col in numeric_cols:
+      if col in df:
+          df[col] = pd.to_numeric(df[col], errors='raise').astype(np.float32)
+
+  for col in categorical_cols:
+      if col in df:
+          df[col] = df[col].astype('category')
+
+  df['date'] = pd.to_datetime(df['date'], format="%Y-%m-%d")
+  df.loc[:, ['year']] = df.date.dt.year
+
+  return df.sort_values(by=['station', 'date'])
+</template>
+
+<template id="c8-template">  
+'pandas.core.frame.DataFrame'
+Index: 276102 entries, 0 to 260762
+Data columns (total 16 columns):
+ #   Column    Non-Null Count   Dtype         
+---  ------    --------------   -----         
+ 0   date      276102 non-null  datetime64[ns]
+ 1   t_mean    265261 non-null  float32       
+ 2   t_max     265261 non-null  float32       
+ 3   t_min     265261 non-null  float32       
+ 4   rh_mean   265532 non-null  float32       
+ 5   rh_max    265532 non-null  float32       
+ 6   rh_min    265532 non-null  float32       
+ 7   prs_mean  265097 non-null  float32       
+ 8   prs_max   265097 non-null  float32       
+ 9   prs_min   265097 non-null  float32       
+ 10  ac_r      266023 non-null  float32       
+ 11  ws_mean   266242 non-null  float32       
+ 12  dwd       264868 non-null  category      
+ 13  wg        266245 non-null  float32       
+ 14  station   276102 non-null  category      
+ 15  year      276102 non-null  int32         
+dtypes: category(2), datetime64[ns](1), float32(12), int32(1)
+memory usage: 18.4 MB
+
+</template>
+
+
+</body>
+</html>
