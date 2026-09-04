@@ -979,7 +979,7 @@ details > summary {
 		IMAGES 
 ===================================== */
 
-.image-container {
+div.image-container:not(:has(img[class^="fixed"])) {
 	cursor: zoom-in;
 }
 
@@ -994,4 +994,12 @@ details > summary {
 
 .image-container.zoom-toggle img {
 	transform: scale(1.5);
+}
+
+img.fixed-80 {
+	width: 80%;
+}
+
+img.fixed-70 {
+	width: 70%;
 }

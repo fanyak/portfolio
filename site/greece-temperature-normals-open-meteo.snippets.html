@@ -200,15 +200,7 @@ async def get_open_meteo_data(stations: pd.DataFrame):
         for i, response in enumerate(responses):
 
             station_name = station_names_list[c:c+step][i]
-            daily = response.Daily()
-
-            # Create a date range that matches the length of the returned data
-
-            print(f"Timezone difference to GMT+0: {response.UtcOffsetSeconds()}s")
-            print(daily.Time())
-            print(daily.TimeEnd())
-            print(daily.Interval())
-
+            daily = response.Daily()           
 
             temp_mean = daily.Variables(2).ValuesAsNumpy()
             date_range = pd.date_range(
@@ -228,6 +220,17 @@ async def get_open_meteo_data(stations: pd.DataFrame):
             openmeteo_daily_data.append(pd.DataFrame(data=daily_data))
 
     return openmeteo_daily_data
+</template>
+<template id="c11-template">
+def create_clim(df, years_list = []):
+  if len(years_list) == 0:
+    cond = df.year.astype(bool)
+  else:
+    cond = df.year.isin(years_list)
+  data_in_years_list = df[cond]
+  clim = data_in_years_list.groupby('yd').agg({'t_mean': [lambda x : x.quantile(0.5), lambda x : x.quantile(0.05), lambda x : x.quantile(0.95)]})
+  clim.columns = ['p50', 'p5', 'p95']
+  return clim
 </template>
 </body>
 </html>
