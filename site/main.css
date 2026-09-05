@@ -980,20 +980,24 @@ details > summary {
 ===================================== */
 
 div.image-container:not(:has(img[class^="fixed"])) {
+	view-transition-name: match-element;
 	cursor: zoom-in;
 }
 
-.image-container img {
+.image-container figure {
 	border-radius: 3px;
 	transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.image-container.zoom-toggle {
+.image-container:not(:has(img[class^="fixed"])).zoom-toggle {
 	cursor: zoom-out;
 }
 
-.image-container.zoom-toggle img {
+.image-container.zoom-toggle figure {
 	transform: scale(1.5);
+	padding: 1rem;
+	background-image: none;
+	background-color: #ffff;
 }
 
 img.fixed-80 {
@@ -1002,4 +1006,10 @@ img.fixed-80 {
 
 img.fixed-70 {
 	width: 70%;
+}
+
+figcaption {
+	padding-top: 0.8rem;
+	font-size: 0.9rem;
+	color: var(--text-muted);
 }
