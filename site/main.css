@@ -987,8 +987,12 @@ div.image-container:not(:has(img[class^="fixed"])) {
 
 .image-container figure {
 	border-radius: 3px;
-	transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+	transition:
+		transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)/*,
+		padding 0.55s cubic-bezier(0.22, 1, 0.36, 1)*/;
+	will-change: transform; /*, padding */
 	z-index: 0;
+	padding: 0.5rem;
 }
 
 .image-container:not(:has(img[class^="fixed"])).zoom-toggle {
@@ -997,7 +1001,6 @@ div.image-container:not(:has(img[class^="fixed"])) {
 
 .image-container.zoom-toggle figure {
 	transform: scale(1.5);
-	padding: 1rem;
 	z-index: 100000;
 	background-image: none;
 	background-color: #ffff;
