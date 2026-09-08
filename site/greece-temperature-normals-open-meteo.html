@@ -144,6 +144,15 @@
 						<strong>R</strong>
 						I am using Python.
 					</p>
+					<p>
+						Note: the original article used historical data for the years
+						1961-1990, downloaded from Open-Meteo, as the reference set. This
+						project is (partly) an exercise in using data from the National
+						Portal, where the <em>historical data</em> that is available starts
+						in 2010 and ends in 2023. I used this set as the reference and
+						downloaded the data for 2025 from Open-Meteo (as was done in the
+						original article).
+					</p>
 
 					<h3>Tools</h3>
 					<div class="block">
@@ -157,7 +166,7 @@
 							<li><strong>Matplotlib and Seaborn</strong> for visualization</li>
 							<li>
 								<strong>statsmodels</strong>
-								for LOWESS/LOESS smoothing and regression
+								for Local Polynomial Regression (LOWESS/LOESS) smoothing
 							</li>
 							<li><strong>scikit-learn</strong> for K-fold cross-validation</li>
 							<li>
@@ -256,7 +265,9 @@
 						station, Thessaloniki.<br>The main columns of interest here are the
 						<code>Date</code>(refers to the calendar day for each day of the
 						year) and <code>T_mean</code> (mean temperature recorded at the
-						station on a calendar day) columns.
+						station on a calendar day) columns. The original article download
+						hourly temperatures from Open-Meteo and computed the daily mean
+						values in code. Here the means are given.
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -431,10 +442,7 @@
 					<div class="block">
 						<div class="image-container">
 							<figure>
-								<img
-									alt="heat-map"
-									id="gtnom1"
-									src="">
+								<img alt="heat-map" id="gtnom1" src="">
 								<figcaption>Heat Map for Missing Values</figcaption>
 							</figure>
 						</div>
@@ -568,7 +576,87 @@
 					</div>
 
 					<h2>Smooth the curve</h2>
+					<p>
+						Next step is to select a smoothing function. This is a model
+						selection task where we need to pick a family of smoothers of
+						increasing flexibility and use cross-validation to find the member
+						of that family the best predicts unseen data.
+					</p>
+					<p>
+						As in the original article, the 2 smoothers that I evaluated are
+						<code>Harmonic Regression</code>
+						and
+						<code>Local Polynomial Regression</code>
+					</p>
+					<p>
+						An important note is that days from a specific year must be in the
+						same fold (either training or test) during the cross-validation
+						process. For this reason, the dataset is split on the
+						<code>year</code> values instead of on the observations, meaning
+						that each fold (either training or test) will contain the days of a
+						specific year.
+					</p>
+					<p>The loss function for evaluating the fit is RMSE</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c12b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c12"></code>
+						</pre>
+						</div>
+					</details>
+					<h3>Harmonic Regression</h3>
+					<p>
+						Harmonic Regerssion has two parameters:
+						<ul>
+							<li>
+								<strong>k</strong>, which represents the harmonic order (e.g., 1
+								for 1st harmonic, 2 for 2nd) and
+							</li>
+							<li>
+								<strong>period</strong>, the period of the cycle. In our case,
+								period defaults to 366.
+							</li>
+						</ul>
+					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c13b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c13">
+							</code>
+						</pre>
+						</div>
+					</details>
+					<p>
+						The aim is to find the best <code>k</code> to transform the series
+						of days in <cde>period</cde>(1 to 366) to a harmonic series of order
+						<code>k</code><br>
+						In other words, <code>k</code> is a hypeparameter.
+					</p>
 
+					<p>
+						Since the national dataset is quite large (224603 rows) I chose a
+						relatively small value for splits (<code>n_splits = 5</code>)
+					</p>
 					<!------>
 					<h2>Interactive content</h2>
 
@@ -621,18 +709,18 @@
 				if (classList.includes("image-container"))
 					parent.classList.toggle("zoom-toggle");
 			}
-						// Keep track of the previous item that was clicked, if any.
-				// Remove the active-item class from the previous item so that only
-				// one list item is placed over the <article> at any one time
-				// if (prevElem === parent) {
-				// 	prevElem.classList.toggle("zoom-toggle");
-				// 	prevElem = undefined;
-				// } else if (prevElem) {
-				// 	prevElem.classList.toggle("zoom-toggle");
-				// 	prevElem = parent;
-				// } else {
-				// 	prevElem = parent;
-				// }
+			// Keep track of the previous item that was clicked, if any.
+			// Remove the active-item class from the previous item so that only
+			// one list item is placed over the <article> at any one time
+			// if (prevElem === parent) {
+			// 	prevElem.classList.toggle("zoom-toggle");
+			// 	prevElem = undefined;
+			// } else if (prevElem) {
+			// 	prevElem.classList.toggle("zoom-toggle");
+			// 	prevElem = parent;
+			// } else {
+			// 	prevElem = parent;
+			// }
 		}
 
 		const image_snippets = Array.from(
@@ -643,8 +731,8 @@
 
 		image_snippets.forEach((el) => {
 			el.addEventListener("click", zoomToggle); // useCapture
-			// el.addEventListener("click", (event) => {				
-			// 	const transition = document.startViewTransition(() => zoomToggle(event));				
+			// el.addEventListener("click", (event) => {
+			// 	const transition = document.startViewTransition(() => zoomToggle(event));
 			// });
 
 			el.addEventListener("mouseleave", () => {

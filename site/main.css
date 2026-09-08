@@ -131,8 +131,8 @@ select {
 	color: var(--nav-text);
 
 	/*position: sticky;*/
-	top: 0;
-	z-index: 100;
+	/* top: 0;
+	z-index: 100; */
 
 	font-family: var(--font-ui);
 }
@@ -219,12 +219,13 @@ select {
 ========================================= */
 
 .page {
+	position: inherit;
 	width: 100%;
-	position: static;
+	z-index: 0;
 }
 
 .article-shell {
-	position: relative;
+	position: inherit;
 	top: 0;
 	left: 0;
 	max-width: var(--max-width);
@@ -986,7 +987,8 @@ div.image-container:not(:has(img[class^="fixed"])) {
 
 .image-container figure {
 	border-radius: 3px;
-	transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+	transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+	z-index: 0;
 }
 
 .image-container:not(:has(img[class^="fixed"])).zoom-toggle {
@@ -996,6 +998,7 @@ div.image-container:not(:has(img[class^="fixed"])) {
 .image-container.zoom-toggle figure {
 	transform: scale(1.5);
 	padding: 1rem;
+	z-index: 100000;
 	background-image: none;
 	background-color: #ffff;
 }
