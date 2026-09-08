@@ -170,7 +170,7 @@
 							</li>
 							<li><strong>scikit-learn</strong> for K-fold cross-validation</li>
 							<li>
-								<strong>openmeto</strong>
+								<strong>Open-Meteo</strong>
 								to get the data for the year 2025
 							</li>
 							<li><strong>asyncio</strong> for executing coroutines</li>
@@ -468,7 +468,7 @@
 					</p>
 					<p>
 						The final dataset contains data from 52 stations between years 2012
-						and 2023, a total of 224603 rows. This will be the
+						and 2023, a total of 226416 rows. This will be the
 						<strong>Reference Set</strong>.
 					</p>
 					<p>
@@ -499,17 +499,17 @@
 						</div>
 					</div>
 
-					<h3>Getting data for 2025 from Open Meteo</h3>
+					<h3>Getting data for 2025 from Open-Meteo</h3>
 					<p>
 						Now that we have the reference set for years 2012-2023, we need data
-						from 2025 to compare against it. OpenMeteo has data from 2025, but
+						from 2025 to compare against it. Open-Meteo has data from 2025, but
 						it is not grouped by station as the data from the National Data
 						Portal.
 						<br>In order to fetch data for the stations that are in the
 						reference set I used the <strong>longitude</strong> and
 						<strong>latitude</strong>
 						data for each station. These became the request parameters to the
-						OpenMeteo server.
+						Open-Meteo server.
 					</p>
 					<p>
 						I made sequential requests for pairs of stations and cached the
@@ -628,6 +628,7 @@
 							</li>
 						</ul>
 					</p>
+					<p>First, the data should be transformed to a harmonic Series of <code>k-order</code></p>
 					<details>
 						<summary>Code</summary>
 						<div class="code-demo">
@@ -654,7 +655,7 @@
 					</p>
 
 					<p>
-						Since the national dataset is quite large (224603 rows) I chose a
+						Since the national dataset is quite large (226416 rows) I chose a
 						relatively small value for splits (<code>n_splits = 5</code>)
 					</p>
 					<!------>
