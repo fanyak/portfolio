@@ -90,9 +90,10 @@ thessaloniki_clean['date'].dt.year.unique()
 year	missing count
 2010	365
 2011	365
-2012	52
-2021	4
-2014	1    
+2012	55
+2021	7
+2014	2
+2015	2    
 </template>
 
 <template id="c6-template">
@@ -167,9 +168,14 @@ dtypes: category(2), datetime64[ns](1), float32(12), int32(1)
 memory usage: 18.4 MB
 </template>
 <template id="c9-template">
-national_mean_temperature_2012_2023 = data_final[['date','year', 'station','t_mean']].reset_index(drop=True)
-national_mean_temperature_2012_2023.loc[:, ['yd']] = national_mean_temperature_2012_2023.date.dt.day_of_year
-national_mean_temperature_2012_2023.loc[:, ['month']] = national_mean_temperature_2012_2023.date.dt.month_name()
+0	2012-01-01	2012	aghiosnikolaos	11.6	1	January
+1	2012-01-02	2012	aghiosnikolaos	11.3	2	January
+2	2012-01-03	2012	aghiosnikolaos	10.8	3	January
+3	2012-01-04	2012	aghiosnikolaos	10.8	4	January
+4	2012-01-05	2012	aghiosnikolaos	11.7	5	January
+...	...	...	...	...	...	...
+
+226416 rows × 6 columns
 </template>
 <template id="c10-template">
 async def get_open_meteo_data(stations: pd.DataFrame):
@@ -254,6 +260,72 @@ def make_harmonic(yd:pd.Series, k_order: int, period = period) -> pd.DataFrame:
     # Ensure the DataFrame is created with the correct index from yd
     dfs.append(pd.DataFrame({f"cos{k}": cos, f"sin{k}": sin}, index=yd.index))
   return pd.concat(dfs, axis = 1, ignore_index = False)
+</template>
+<template id="c14-template">
+# number of folds for splitting years 2012-2023
+n_splits=5
+# tail end of the range of the K hyperparameter
+K=10 
+period = 366
+cv=KFold(n_splits=n_splits)
+# split on the years (not on the data points)
+years=national_mean_temperature_2012_2023.year.unique()
+</template>
+<template id="c15-template">
+def rmsq(true: pd.Series, predictions: np.ndarray):
+  #vectorized
+  return np.sqrt(np.mean((predictions - true.values)**2, axis = 1) )
+</template>
+<template id="c16-template">
+def harmonic_cross_val(df: pd.DataFrame, K:int) -> tuple[np.ndarray, np.array]:
+  k_oof_predictions = []
+  k_oof_perf = []
+
+  for k in range(1, K + 1):
+    ## fold cache
+    oof = np.zeros(df.shape[0])
+    oof_errors = np.zeros(n_splits)
+
+    for i, (train_index, test_index) in enumerate(cv.split(years)):
+      train = df[df.year.isin(years[train_index])]
+      test = df[df.year.isin(years[test_index])]
+
+      X_train= pd.DataFrame(np.ones(train.shape[0]), index=train.index, columns=['const'])
+      X_test = pd.DataFrame(np.ones(test.shape[0]), index=test.index, columns=['const'])
+
+      # Build cumulative harmonics: 1, 2, ..., k
+      X_train = X_train.join(make_harmonic(train.yd, k))
+      X_test = X_test.join(make_harmonic(test.yd, k))
+
+      y_train = train.t_mean
+
+      model = sm.OLS(y_train, X_train)
+      results = model.fit()
+
+      fold_predictions = results.predict(X_test)
+      oof[test.index] = fold_predictions
+      oof_errors[i] = rmsq(test.t_mean, np.array(fold_predictions), 0)
+
+    print(f"Errors for K = {k}: {oof_errors}")
+    k_oof_predictions.append(oof) # oof is an indexed, *complete* frame
+    k_oof_perf.append(np.mean(oof_errors))
+    print(f"Finished CV for K = {k}")
+
+  return np.array(k_oof_predictions), np.array(k_oof_perf)
+</template>
+<template id="c17-template">
+   station      best_k  harmonic_lowest_error
+0  thessaloniki  4       2.476189
+1  pirgos        4       2.161326
+2  athens        4       2.526519
+3  xanthi        4       2.831213
+4  nevrokopi     4       3.147449
+5  larissa       4       2.731971
+6  lefkada       4       2.140458
+7  heraclion     4       2.337222
+8  grevena       4       2.865827
+9  polygyros     4       3.328481
+10 national      4       3.552164
 </template>
 </body>
 </html>

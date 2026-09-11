@@ -372,11 +372,11 @@ select {
 }
 
 .article-content h4 {
-	margin-top: 40px;
-	margin-bottom: 16px;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 
 	font-family: var(--font-ui);
-	font-size: 21px;
+	font-size: clamp(1.5rem, 2vw, 1.5rem);
 	font-weight: 600;
 }
 
@@ -478,6 +478,16 @@ details > summary {
 	font-family: var(--font-code);
 	font-size: 0.9rem;
 	line-height: 1.7;
+}
+
+.article-content pre.highlight-last {
+	background-image: linear-gradient(
+		to bottom,
+		transparent 80%,
+		#dbd1d1 80%,
+		#dbd1d1 88%,
+		transparent 88%
+	);
 }
 
 /* =========================================
@@ -987,8 +997,7 @@ div.image-container:not(:has(img[class^="fixed"])) {
 
 .image-container figure {
 	border-radius: 3px;
-	transition:
-		transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)/*,
+	transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) /*,
 		padding 0.55s cubic-bezier(0.22, 1, 0.36, 1)*/;
 	will-change: transform; /*, padding */
 	z-index: 0;

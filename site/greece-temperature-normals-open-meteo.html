@@ -166,7 +166,7 @@
 							<li><strong>Matplotlib and Seaborn</strong> for visualization</li>
 							<li>
 								<strong>statsmodels</strong>
-								for Local Polynomial Regression (LOWESS/LOESS) smoothing
+								for OLS and Local Polynomial Regression (LOWESS/LOESS) smoothing
 							</li>
 							<li><strong>scikit-learn</strong> for K-fold cross-validation</li>
 							<li>
@@ -304,7 +304,9 @@
 						</details>
 					</div>
 					<p>
-						Depending on the column there seem to be up to 793 missing values.
+						Looking at the <code>T_mean</code> column, there are
+						<strong>796 missing daily values</strong>
+						across years.
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">thessaloniki_clean.info()</div>
@@ -332,10 +334,10 @@
               </pre>
 					</div>
 					<p>
-						There are 787 rows with missing values in all the numeric columns
-						for station Thessaloniki. Given that the data can be split by year
-						using the <code>date</code> column, we can check whether the missing
-						values belong to specific years.<br>
+						Given that the data can be split by year using the
+						<code>date</code>
+						column, we can check whether the missing values belong to specific
+						years.<br>
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -355,7 +357,9 @@
 						This gives us all the years from 2010 to 2023. With a little
 						wrangling (which you can read through on github) we can see that for
 						2010 and 2011 we have year-round missing values in all the columns.
-						For 2012 only the values for 52 days are missing.
+						For 2012 the values for 55 days are missing. Further analysis shows
+						that these 55 days in 2012 are concentrated in January (31 days) and
+						February (22 days).
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -364,6 +368,20 @@
 						<pre>
               <code id="c5"></code>
             </pre>
+					</div>
+					<p>
+						This is the mean daily temperature distribution per month across all
+						years. July seems to have most outliers
+					</p>
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img id="gtnom0" src="">
+								<figcaption>
+									Daily mean temperatures, Thessaloniki, 2010-2023
+								</figcaption>
+							</figure>
+						</div>
 					</div>
 
 					<p>
@@ -430,86 +448,94 @@
           </pre>
 					</div>
 					<p>
-						Checking again for all null rows, the combined station data has 9796
-						rows were all numeric data is missing.<br>
-						At this point the Panda's <code>pivot</code> method comes in handy.
-						what we want is a frame to show the total count of missing values by
+						Checking again for all null rows, the combined station data has
+						<strong>10841</strong>
+						rows were <code>T_mean</code> data is missing.<br>
+						The Panda's <code>pivot method</code> helped to calculate the total
+						count of missing values by
 						<code>Year</code>
-						and <code>Station</code>. This is similar to Excel's pivot table. As
-						a summarization of the process I created a heatmap to show which
-						stations stand out as having the most missing values by year.
+						and <code>Station</code>. As a summarization of the code, I created
+						a heatmap to show which stations stand out as having the most
+						missing values by year.
 					</p>
 					<div class="block">
 						<div class="image-container">
 							<figure>
-								<img alt="heat-map" id="gtnom1" src="">
+								<img alt="heat-map of missing values" id="gtnom1" src="">
 								<figcaption>Heat Map for Missing Values</figcaption>
 							</figure>
 						</div>
 					</div>
 					<p>
 						Karpenisitown station has missing data for more than 350 days in all
-						years between 2010 and 2017. Livadeia station has missing values for
-						years 2010 through to 2013, and there are a couple of other stations
-						that have missing values for years 2010-2012.
+						years between 2010 and 2017. Lindos station has most values missing
+						for years 2010 through to 2014, and Argos and kyparissia are missing
+						all values for the first 2 years and most values for 2012. There are
+						a couple of other stations that have missing values for years
+						2010-2012, as we saw earlier with Thessaloniki data.
 					</p>
 					<p>
 						We can't use techniques such as backward / forward filling to remedy
-						these. We can only drop either the stations or the years. Since
-						Karpenisitown has most of its values missing, I dropped this station
-						entirely from the data. Similarly, since data for Lindos station is
-						missing for the first 3 years (2010-2013), I dropped this station as
-						well.
+						year-round missing values. Instead we could drop either the stations
+						or the years. Since Karpenisitown has most of its values missing, I
+						dropped this station entirely from the data. Similarly, since data
+						for Lindos station is missing for the first 4 years (2010-2014), I
+						dropped this station as well.
 					</p>
 					<p>
-						Lastly, I decided to keep data from 2012 onwards for all other
-						stations, fill forwards and backwards for up to 3 days, and then
-						drop any remaining missing values.
+						Bellow is a heat-map for remaining stations with count > 30 for
+						missing daily values per year
+					</p>
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img
+									id="gtnom3"
+									alt="distribution of missing daily values > 30"
+									src=""
+								>
+								<figcaption>
+									Distribution of missing daily values > 30 (count)
+								</figcaption>
+							</figure>
+						</div>
+					</div>
+					<p>
+						In the end, I decided to keep data from 2012 onwards for all
+						remainig stations, fill forwards and backwards for up to 3 days, and
+						then drop any remaining missing values (2653 in total across years
+						and stations).
+					</p>
+					<p>
+						Additionally, I created 2 more helper columns, <code>day</code>(1 to
+						366 to account for leap years) and <code>month</code> (name of the
+						month). These will help with the computations of daily climatology
+						and chart design.
 					</p>
 					<p>
 						The final dataset contains data from 52 stations between years 2012
-						and 2023, a total of 226416 rows. This will be the
+						and 2023, a total of 226416 rows and 6 columns. This will be the
 						<strong>Reference Set</strong>.
-					</p>
-					<p>
-						Since I only need the daily mean temperature records, the rest of
-						the numeric columns can be dropped. Additionally, I created 2 more
-						helper columns, <code>day</code>(1 to 366 to account for leap years)
-						and <code>month</code> (name of the month). These will help with the
-						computations of daily climatology and chart design.
 					</p>
 
 					<div class="code-demo">
-						<div class="code-demo-header">
-							<button
-								title="Copy to Clipboard"
-								class="code-copy-button"
-								id="c9b"
-							>
-								<i class="bi"></i>
-							</button>
-						</div>
+						<div class="code-demo-header"></div>
 						<pre>
 								<code id="c9"></code>
 							</pre>
-					</div>
-					<div class="block">
-						<div class="image-container">
-							<img class="fixed-70" alt="reference set" src="assets/gn3.png">
-						</div>
 					</div>
 
 					<h3>Getting data for 2025 from Open-Meteo</h3>
 					<p>
 						Now that we have the reference set for years 2012-2023, we need data
-						from 2025 to compare against it. Open-Meteo has data from 2025, but
-						it is not grouped by station as the data from the National Data
-						Portal.
+						from 2025 to compare against it. Open-Meteo has daily temperatures
+						for 2025, but not grouped by station as the temperatures from the
+						National Data Portal.
 						<br>In order to fetch data for the stations that are in the
 						reference set I used the <strong>longitude</strong> and
 						<strong>latitude</strong>
-						data for each station. These became the request parameters to the
-						Open-Meteo server.
+						data for each station. These data points are the request parameters
+						to the Open-Meteo server.
 					</p>
 					<p>
 						I made sequential requests for pairs of stations and cached the
@@ -541,8 +567,10 @@
 						and a
 						<strong>typical range</strong>
 						across years and stations.<br>
-						I collapsed the reference data to one median value per day of the
-						year (1 to 366). The 5th and 95th percentiles mark the typical range
+						I collapsed the reference data to one <code>median</code> value per
+						day of the year (1 to 366). The <code>5th</code> and
+						<code>95th</code>
+						percentiles mark the typical range
 					</p>
 
 					<details>
@@ -563,24 +591,24 @@
 						</div>
 					</details>
 					<p>
-						These are 366 noisy points, one for each day of the year, each
-						summarising 12 observations (years 2012-2023).
+						These are 366 noisy points each summarising mean daily temperatures
+						using the daily median over the period 2012-2023.
 					</p>
 					<div class="block">
 						<div class="image-container">
 							<figure>
-								<img id="gtnom2" src="">
+								<img id="gtnom2" src="" alt="daily climatology">
 								<figcaption>Daily Climatology Raw Data</figcaption>
 							</figure>
 						</div>
 					</div>
 
-					<h2>Smooth the curve</h2>
+					<h2>Smooth the Curve</h2>
 					<p>
 						Next step is to select a smoothing function. This is a model
-						selection task where we need to pick a family of smoothers of
-						increasing flexibility and use cross-validation to find the member
-						of that family the best predicts unseen data.
+						selection task where we need to find the member of a family of
+						smoothers the best predicts unseen data. We do that using
+						cross-validation.
 					</p>
 					<p>
 						As in the original article, the 2 smoothers that I evaluated are
@@ -588,47 +616,50 @@
 						and
 						<code>Local Polynomial Regression</code>
 					</p>
+
+					<h3 id="harmonic-regression">Harmonic Regression</h3>
 					<p>
-						An important note is that days from a specific year must be in the
-						same fold (either training or test) during the cross-validation
-						process. For this reason, the dataset is split on the
-						<code>year</code> values instead of on the observations, meaning
-						that each fold (either training or test) will contain the days of a
-						specific year.
-					</p>
-					<p>The loss function for evaluating the fit is RMSE</p>
-					<details>
-						<summary>Code</summary>
-						<div class="code-demo">
-							<div class="code-demo-header">
-								<button
-									title="Copy to Clipboard"
-									class="code-copy-button"
-									id="c12b"
-								>
-									<i class="bi"></i>
-								</button>
-							</div>
-							<pre>
-							<code id="c12"></code>
-						</pre>
-						</div>
-					</details>
-					<h3>Harmonic Regression</h3>
-					<p>
-						Harmonic Regerssion has two parameters:
+						As Dominic Royé
+						<a
+							href="https://dominicroye.github.io/blog/spain-temperature-normals-openmeteo/#step-4-how-much-should-we-smooth"
+							target="_new"
+							>explains</a
+						>:
+						<blockquote>
+							<em
+								>Harmonic Regerssion models the climatological curve as a
+								<strong>sum of sine/cosine pairs</strong>
+								with a 366-day period</em
+							>
+						</blockquote>
+						.
+						<p>
+							The <em>sum of the sine/cosine pairs</em> are linear predictors,
+							as in OLS. An instance of this model takes two parameters:
+						</p>
 						<ul>
 							<li>
-								<strong>k</strong>, which represents the harmonic order (e.g., 1
-								for 1st harmonic, 2 for 2nd) and
+								<code>K</code>, which represents the harmonic order (e.g., 1 for
+								1st harmonic, 2 for 2nd, etc). <br>
+								The higher <code>K</code> is, the less smoothing we get, and the
+								higher the variance of the model.
 							</li>
 							<li>
-								<strong>period</strong>, the period of the cycle. In our case,
-								period defaults to 366.
+								<code>period</code>, the period of the cycle. In our case,
+								period is fixed at 366 days to account for leap years.
 							</li>
 						</ul>
 					</p>
-					<p>First, the data should be transformed to a harmonic Series of <code>k-order</code></p>
+					<p>
+						While <code>period</code> is fixed, parameter <code>k</code> is a
+						hyperparameter that we need to tune in order to create the model
+						that best predicts the 2025 data.
+					</p>
+					<h4>Hyperparameter tuning</h4>
+					<p>
+						First, the data should be transformed into since/cosine pairs of a
+						chosen <code>k-order</code>.
+					</p>
 					<details>
 						<summary>Code</summary>
 						<div class="code-demo">
@@ -648,16 +679,122 @@
 						</div>
 					</details>
 					<p>
-						The aim is to find the best <code>k</code> to transform the series
-						of days in <cde>period</cde>(1 to 366) to a harmonic series of order
-						<code>k</code><br>
-						In other words, <code>k</code> is a hypeparameter.
+						Now we use the transformed data in the cross-valiation process.
+						Bellow are some useful settings:
 					</p>
-
+					<div class="code-demo">
+						<div class="code-demo-header">
+							Cross Validation Settings for Harmonic Regression
+							<button
+								title="Copy to Clipboard"
+								class="code-copy-button"
+								id="c14b"
+							>
+								<i class="bi"></i>
+							</button>
+						</div>
+						<pre>
+							<code id="c14"></code>
+						</pre>
+					</div>
+					<p>The loss function is <code>RMSE</code></p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c15b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c15">
+							</code>
+						</pre>
+						</div>
+					</details>
+					<p>Again, from the original article:</p>
+					<blockquote>
+						To pick K we fit on the daily data directly (not an
+						already-aggregated climatology), using k-fold cross-validation split
+						by year, so a given year's 365/366 days stay together, fully in
+						training or fully in test.
+					</blockquote>
 					<p>
-						Since the national dataset is quite large (226416 rows) I chose a
-						relatively small value for splits (<code>n_splits = 5</code>)
+						For each chosen value of <code>K</code> we repeat the following
+						process <code>n_split</code> times:
+						<ol>
+							<li>
+								create a new OLS model for the selected <code>K</code> order,
+							</li>
+							<li>
+								hold out the days of the current iteration's test fold years,
+							</li>
+							<li>fit the model on the days of the training folds,</li>
+							<li>use the fitted model to predict the held-out days,</li>
+							<li>
+								estimate the model's error of the n<sup>th</sup>
+								iteration using the
+								<code>RMSE</code>
+								loss function.
+							</li>
+						</ol>
 					</p>
+					<p>
+						Finally, the estimated performances (RMSE) of all the
+						<code>n_split</code>
+						iterations are used to calculate the estimated average (mean)
+						performance for each <code>K</code>.
+					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c16b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c16">
+							</code>
+						</pre>
+						</div>
+					</details>
+					<p>
+						To start, I tested the process with just 1 city (Athens). The
+						<code>best K</code>
+						result was <code>4</code>
+					</p>
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img
+									id="gtnom4"
+									src=""
+									alt="cross-validated error for Athens Station"
+								>
+								<figcaption>
+									cross-validated error over K-order for Athens station
+								</figcaption>
+							</figure>
+						</div>
+					</div>
+					<p>
+						The results are similar both when the process is run separately on
+						different cities and on the national level.
+					</p>
+					<div class="code-demo">
+						<pre class="highlight-last">
+								<code id="c17"></code>
+							</pre>
+					</div>
 					<!------>
 					<h2>Interactive content</h2>
 
