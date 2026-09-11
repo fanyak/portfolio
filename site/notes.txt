@@ -1,0 +1,41 @@
+national_1961_1990
+
+# A tibble: 10,957 x 4
+   date        tmed    yd    yr
+   <date>     <dbl> <dbl> <dbl>
+ 1 1961-01-01  6.9      1  1961
+ 2 1961-01-02  8        2  1961
+ 3 1961-01-03  9.2      3  1961
+ 4 1961-01-04  6.9      4  1961
+ 5 1961-01-05  6        5  1961
+ 6 1961-01-06  5.6      6  1961
+ 7 1961-01-07  8.55     7  1961
+ 8 1961-01-08 10.6      8  1961
+ 9 1961-01-09  8.95     9  1961
+10 1961-01-10  7.7     10  1961
+# i 10,947 more rows
+
+clim <- national_1961_1990 |>
+  group_by(yd) |>
+  summarise(
+    tmed_norm = median(tmed, na.rm = TRUE),
+    p5  = quantile(tmed, .05, na.rm = TRUE),
+    p95 = quantile(tmed, .95, na.rm = TRUE)
+  )
+
+fit_harmonic <- function(y, yd, K, period = 366) {
+  fit <- lm(y ~ ., data = bind_cols(y = y, make_harmonics(yd, K, period)))
+  predict(fit)
+}
+
+clim <- clim |>
+  mutate(
+    smooth          = fit_harmonic(tmed_norm, yd, best_K),
+    p5_smooth       = fit_harmonic(p5, yd, best_K),
+    p95_smooth      = fit_harmonic(p95, yd, best_K),
+    smooth_k1       = fit_harmonic(tmed_norm, yd, 1),
+    smooth_loess08  = loess_smooth(yd, tmed_norm, span = .08),
+    smooth_loess_cv = loess_smooth(yd, tmed_norm, span = best_span)
+  )
+
+clim

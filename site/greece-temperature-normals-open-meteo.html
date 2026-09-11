@@ -768,9 +768,9 @@
 						</div>
 					</details>
 					<p>
-						To start, I tested the process with just 1 city (Athens). The
-						<code>best K</code>
-						result was <code>4</code>
+						To start, I tested the process with just 1 city (Athens). The error
+						drops sharply from <code>K=1</code> to <code>K=2</code>, bottoms at
+						<code>K=4</code> and starts to rise again.
 					</p>
 					<div class="block">
 						<div class="image-container">
@@ -787,13 +787,36 @@
 						</div>
 					</div>
 					<p>
-						The results are similar both when the process is run separately on
+						The results are similar when the process is run both separately on
 						different cities and on the national level.
 					</p>
 					<div class="code-demo">
+						<div class="code-demo-header">
+							Results for picks of station and on the national level
+						</div>
 						<pre class="highlight-last">
 								<code id="c17"></code>
 							</pre>
+					</div>
+
+					<h3>Smooth the Data using best-K</h3>
+					<p>
+						I fitted the national climatology data using <code>K = 4</code>, the
+						cross-validated value,
+					</p>
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img
+									id="gtnom5"
+									src=""
+									alt="Harmonic vs Raw Climatology (2012-2023) using K=4<"
+								>
+								<figcaption>
+									Harmonic vs Raw Climatology (2012-2023) using K=4
+								</figcaption>
+							</figure>
+						</div>
 					</div>
 					<!------>
 					<h2>Interactive content</h2>
@@ -930,7 +953,7 @@
 		</script>
 
 		<script>
-		const srsc = fetch("/assets/asset-store.txt")
+		const srsc = fetch("./assets/asset-store.txt")
 			.then((res) => res.text())
 			.then((res) => JSON.parse(res))
 			.then((imgs) => {

@@ -25,5 +25,20 @@
 			"</div>",
       "</details>"
 		]
+	},
+	"Image Demo Block": {
+		"scope": "html",
+		"prefix": "img-block",
+		"description": "Insert the image HTML block used in the Greece temperature article",
+		"body": [
+		"<div class=\"block\">",
+		"\t<div class=\"image-container\">",
+		"\t\t<figure>",							
+		"\t\t\t<img id=\"\" src=\"\" alt=\"\">",
+		"\t\t\t\t<figcaption>Daily Climatology Raw Data</figcaption>",
+		"\t\t</figure>",
+		"\t</div>",
+		"</div>"
+		]
 	}
 }
