@@ -31,7 +31,7 @@
 	</head>
 
 	<body>
-		<div
+		<!-- <div
 			style="position:absolute; top: 0; bottom:0;left:0; right:0; z-index:-1;"
 		>
 			<img
@@ -49,7 +49,7 @@
 				alt=""
 				style="display:block;width:100%;height:100%;border-radius:inherit;object-position:center;object-fit:cover"
 			>
-		</div>
+		</div> -->
 
 		<header class="site-header">
 			<div class="nav-container">
@@ -132,7 +132,8 @@
 						of noisy data, without either following the noise or flattening real
 						features. This is a <strong>model-selection problem</strong> where
 						we must choose between families of smoothers. The preferred families
-						for this project are two: <strong>loess</strong> and
+						for this project are two: <strong>loess</strong>(locally weighted
+						regression) and
 						<strong>harmonic</strong>
 						regression. Both of these smoothers can be tuned and (re-)evaluated
 						in a cross-validation process.
@@ -166,7 +167,7 @@
 							<li><strong>Matplotlib and Seaborn</strong> for visualization</li>
 							<li>
 								<strong>statsmodels</strong>
-								for OLS and Local Polynomial Regression (LOWESS/LOESS) smoothing
+								for OLS and Locally weighted regression (LOWESS/LOESS) smoothing
 							</li>
 							<li><strong>scikit-learn</strong> for K-fold cross-validation</li>
 							<li>
@@ -376,7 +377,7 @@
 					<div class="block">
 						<div class="image-container">
 							<figure>
-								<img id="gtnom0" src="">
+								<img id="gtnom0" src="" alt="Daily mean temperatures, Thessaloniki, 2010-2023">
 								<figcaption>
 									Daily mean temperatures, Thessaloniki, 2010-2023
 								</figcaption>
@@ -519,7 +520,9 @@
 					</p>
 
 					<div class="code-demo">
-						<div class="code-demo-header"></div>
+						<div class="code-demo-header">
+							national_mean_temperature_2012_2023
+						</div>
 						<pre>
 								<code id="c9"></code>
 							</pre>
@@ -614,7 +617,7 @@
 						As in the original article, the 2 smoothers that I evaluated are
 						<code>Harmonic Regression</code>
 						and
-						<code>Local Polynomial Regression</code>
+						<code>Locally weighted regression</code>
 					</p>
 
 					<h3 id="harmonic-regression">Harmonic Regression</h3>
@@ -770,7 +773,8 @@
 					<p>
 						To start, I tested the process with just 1 city (Athens). The error
 						drops sharply from <code>K=1</code> to <code>K=2</code>, bottoms at
-						<code>K=4</code> and starts to rise again.
+						<code>K=4</code>
+						and starts to rise again.
 					</p>
 					<div class="block">
 						<div class="image-container">
@@ -799,7 +803,7 @@
 							</pre>
 					</div>
 
-					<h3>Smooth the Data using best-K</h3>
+					<h4>Smooth the Data using best-K</h4>
 					<p>
 						I fitted the national climatology data using <code>K = 4</code>, the
 						cross-validated value,
@@ -818,6 +822,28 @@
 							</figure>
 						</div>
 					</div>
+
+					<h3 id="loess-regression">Locally weighted regression</h3>
+					<p>
+						Loess works locally, meaning that to make an estimate of a value it uses a
+						fraction of the data that is near-by that value. The size of the
+						fraction is a (hyper)parameter of the model.
+					</p>
+					<p>
+						Specifially, in the statsmodel package(
+						<code>statsmodels.api.nonparametric.lowess</code>
+						) this parameter is named <code>frac</code>:
+						<blockquote>
+							Suppose the input data has N points. The algorithm works by
+							estimating the smooth y_i by taking the frac*N closest points to
+							(x_i,y_i) based on their x values and estimating y_i using a
+							weighted linear regression. The weight for (x_j,y_j) is tricube
+							function applied to abs(x_i-x_j).
+						</blockquote>
+					</p>
+					<p>To run the Loess regression we use the climatology data (one summarized value per day for all the years), not the raw daily data. 
+						However, since the model uses the frac*N closest points we have to make day 366 and day 1 be neighbours. 
+						To fix this we glue three copies of the climatology end to end, smooth the concatenated data, and keep only the middle copy</p>
 					<!------>
 					<h2>Interactive content</h2>
 
@@ -869,19 +895,7 @@
 				const classList = Array.from(parent.classList);
 				if (classList.includes("image-container"))
 					parent.classList.toggle("zoom-toggle");
-			}
-			// Keep track of the previous item that was clicked, if any.
-			// Remove the active-item class from the previous item so that only
-			// one list item is placed over the <article> at any one time
-			// if (prevElem === parent) {
-			// 	prevElem.classList.toggle("zoom-toggle");
-			// 	prevElem = undefined;
-			// } else if (prevElem) {
-			// 	prevElem.classList.toggle("zoom-toggle");
-			// 	prevElem = parent;
-			// } else {
-			// 	prevElem = parent;
-			// }
+			}		
 		}
 
 		const image_snippets = Array.from(
@@ -908,7 +922,7 @@
 		});
 		</script>
 
-		<input type="text" id="cp" style="position:fixed; left:-100px">
+		<input type="text" id="cp" style="position:fixed; left:-100px" aria-label="copy text">
 
 		<script>
 		function normalizeCode(text) {
@@ -954,8 +968,13 @@
 
 		<script>
 		const srsc = fetch("./assets/asset-store.txt")
-			.then((res) => res.text())
-			.then((res) => JSON.parse(res))
+			.then((res) => {
+				if(!(res.ok)) {
+					throw new Error(`Response not successfule - status: ${res.status}`)
+				}
+				return res.text()
+			})
+			.then((text) => JSON.parse(text))
 			.then((imgs) => {
 				for (let [imgId, src] of Object.entries(imgs)) {
 					document.getElementById(imgId).src = src;

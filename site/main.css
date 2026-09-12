@@ -37,7 +37,7 @@
 ========================================= */
 
 :root {
-	--bg: #ffffff;
+	--bg: #f4efeb;
 	--text: #161616;
 	--text-muted: #666666;
 	--border: #e6e6e6;
@@ -45,7 +45,7 @@
 	--nav-text: #1a1a1a;
 	--nav-bg: #ffffff;
 
-	--accent: rgb(237, 104, 43); /*#7c3aed; */
+	--accent: rgb(139 52 12); /*#7c3aed; */
 	--accent-light: #f4f1ed;
 
 	--code-bg: #f5f5f5;
@@ -87,7 +87,7 @@ html {
 body {
 	margin: 0;
 	position: relative;
-	/* background: var(--bg);*/
+	background: var(--bg);
 	/*https://framerusercontent.com/images/FlKMe2C84oIukHZ4vGWy3Htrs.png*/
 	/* background-image: url("assets/bg.png");
   background-size: cover;
