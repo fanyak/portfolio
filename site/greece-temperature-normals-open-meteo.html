@@ -888,7 +888,7 @@
 		let prevElem;
 
 		function zoomToggle(event) {
-			event.stopPropagation();
+			event.stopPropagation();// don't propagate to the document level
 			const figure = event.target.parentNode;
 			const parent = figure && figure.parentNode;
 			if (parent) {
@@ -905,10 +905,7 @@
 		);
 
 		image_snippets.forEach((el) => {
-			el.addEventListener("click", zoomToggle); // useCapture
-			// el.addEventListener("click", (event) => {
-			// 	const transition = document.startViewTransition(() => zoomToggle(event));
-			// });
+			el.addEventListener("click", zoomToggle, useCapture=true); // useCapture		
 
 			el.addEventListener("mouseleave", () => {
 				el.parentNode.classList.remove("zoom-toggle");
