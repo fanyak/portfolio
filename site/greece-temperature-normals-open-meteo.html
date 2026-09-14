@@ -951,7 +951,7 @@
 
 		function codeParse(codeString) {
 			const regex =
-				/\bdef\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\b\d+\b|\b\d+\.\d+\b|->/g;
+				/\bdef\b|\basync\b|\bimport\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\b\d+\b|\b\d+\.\d+\b|->/g;
 			const spans = codeString.split("\n").map((s) => {
 				if (s.trim().startsWith("#")) {
 					return s;
@@ -969,7 +969,7 @@
 					match_span.textContent = match;
 					if (match === "=" || match === "==") {
 						match_span.classList.add("equal_sign");
-					} else if (match === "def") {
+					} else if (match === "def" || match === "async") {
 						match_span.classList.add("function");
 					} else if (Number.isFinite(parseInt(match))) {
 						if (m.index == 0) {
