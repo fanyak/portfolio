@@ -5,7 +5,10 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width">
 		<meta name="text-scale" content="scale">
-		<meta name="description" content="Author: Fani Akritidou, use Python, statsmodels.api, harmonic regression, loess regression, matplotlib.pyplot">
+		<meta
+			name="description"
+			content="Author: Fani Akritidou, use Python, statsmodels.api, harmonic regression, loess regression, matplotlib.pyplot"
+		>
 		<title>
 			Recreating a Data-Driven Temperature Normal for Greece in Python
 		</title>
@@ -30,7 +33,8 @@
   <meta property="fediverse:creator" content="@user@mastodon.social" > -->
 	</head>
 
-	<body>
+	<body class="auto-dark"><!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
 		<!-- <div
 			style="position:absolute; top: 0; bottom:0;left:0; right:0; z-index:-1;"
 		>
@@ -377,7 +381,11 @@
 					<div class="block">
 						<div class="image-container">
 							<figure>
-								<img id="gtnom0" src="" alt="Daily mean temperatures, Thessaloniki, 2010-2023">
+								<img
+									id="gtnom0"
+									src=""
+									alt="Daily mean temperatures, Thessaloniki, 2010-2023"
+								>
 								<figcaption>
 									Daily mean temperatures, Thessaloniki, 2010-2023
 								</figcaption>
@@ -632,10 +640,10 @@
 							<em
 								>Harmonic Regerssion models the climatological curve as a
 								<strong>sum of sine/cosine pairs</strong>
-								with a 366-day period</em
+								with a 366-day period.</em
 							>
 						</blockquote>
-						.
+						
 						<p>
 							The <em>sum of the sine/cosine pairs</em> are linear predictors,
 							as in OLS. An instance of this model takes two parameters:
@@ -825,9 +833,9 @@
 
 					<h3 id="loess-regression">Locally weighted regression</h3>
 					<p>
-						Loess works locally, meaning that to make an estimate of a value it uses a
-						fraction of the data that is near-by that value. The size of the
-						fraction is a (hyper)parameter of the model.
+						Loess works locally, meaning that to make an estimate of a value it
+						uses a fraction of the data that is near-by that value. The size of
+						the fraction is a (hyper)parameter of the model.
 					</p>
 					<p>
 						Specifially, in the statsmodel package(
@@ -841,9 +849,14 @@
 							function applied to abs(x_i-x_j).
 						</blockquote>
 					</p>
-					<p>To run the Loess regression we use the climatology data (one summarized value per day for all the years), not the raw daily data. 
-						However, since the model uses the frac*N closest points we have to make day 366 and day 1 be neighbours. 
-						To fix this we glue three copies of the climatology end to end, smooth the concatenated data, and keep only the middle copy</p>
+					<p>
+						To run the Loess regression we use the climatology data (one
+						summarized value per day for all the years), not the raw daily data.
+						However, since the model uses the frac*N closest points we have to
+						make day 366 and day 1 be neighbours. To fix this we glue three
+						copies of the climatology end to end, smooth the concatenated data,
+						and keep only the middle copy
+					</p>
 					<!------>
 					<h2>Interactive content</h2>
 
@@ -888,14 +901,14 @@
 		let prevElem;
 
 		function zoomToggle(event) {
-			event.stopPropagation();// don't propagate to the document level
+			event.stopPropagation(); // don't propagate to the document level
 			const figure = event.target.parentNode;
 			const parent = figure && figure.parentNode;
 			if (parent) {
 				const classList = Array.from(parent.classList);
 				if (classList.includes("image-container"))
 					parent.classList.toggle("zoom-toggle");
-			}		
+			}
 		}
 
 		const image_snippets = Array.from(
@@ -905,7 +918,7 @@
 		);
 
 		image_snippets.forEach((el) => {
-			el.addEventListener("click", zoomToggle, useCapture=true);
+			el.addEventListener("click", zoomToggle, (useCapture = true));
 			el.addEventListener("mouseleave", () => {
 				el.parentNode.classList.remove("zoom-toggle");
 			});
@@ -918,7 +931,12 @@
 		});
 		</script>
 
-		<input type="text" id="cp" style="position:fixed; left:-100px" aria-label="copy text">
+		<input
+			type="text"
+			id="cp"
+			style="position:fixed; left:-100px"
+			aria-label="copy text"
+		>
 
 		<script>
 		function normalizeCode(text) {
@@ -929,6 +947,52 @@
 			const baseIndent = indents.length > 0 ? Math.min(...indents) : 0;
 
 			return lines.map((line) => line.slice(baseIndent)).join("\n");
+		}
+
+		function codeParse(codeString) {
+			const regex =
+				/\bdef\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\b\d+\b|\b\d+\.\d+\b|->/g;
+			const spans = codeString.split("\n").map((s) => {
+				if (s.trim().startsWith("#")) {
+					return s;
+				}
+				if (s.trim().startsWith("print")) {
+					return s;
+				}
+				const span = document.createElement("span");
+				// const equal_signs = Array.from(s.matchAll(/=+/g))
+				const matches = Array.from(s.matchAll(regex));
+				let current_index = 0;
+				for (let m of matches) {
+					const match = m[0];
+					const match_span = document.createElement("span");
+					match_span.textContent = match;
+					if (match === "=" || match === "==") {
+						match_span.classList.add("equal_sign");
+					} else if (match === "def") {
+						match_span.classList.add("function");
+					} else if (Number.isFinite(parseInt(match))) {
+						if (m.index == 0) {
+							continue;
+						}
+						match_span.classList.add("number");
+					} else {
+						match_span.classList.add("varchar");
+					}
+					const text_node = document.createTextNode(
+						s.substring(current_index, m.index),
+					);
+					span.appendChild(text_node);
+					span.appendChild(match_span);
+					current_index = m.index + match.length;
+				}
+				const final_text_node = document.createTextNode(
+					s.substring(current_index),
+				);
+				span.appendChild(final_text_node);
+				return span;
+			});
+			return spans;
 		}
 
 		async function loadCodeSnippets() {
@@ -949,6 +1013,11 @@
 					}
 					codeBlock.replaceChildren(template.content.cloneNode(true));
 					codeBlock.textContent = normalizeCode(codeBlock.textContent);
+					if (!template.dataset.noParse){
+						const spans = codeParse(codeBlock.textContent);
+						codeBlock.replaceChildren(...spans);
+					}
+					
 				});
 			} catch (e) {
 				console.log(e);
@@ -965,10 +1034,10 @@
 		<script>
 		const srsc = fetch("./assets/asset-store.txt")
 			.then((res) => {
-				if(!(res.ok)) {
-					throw new Error(`Response not successfule - status: ${res.status}`)
+				if (!res.ok) {
+					throw new Error(`Response not successfule - status: ${res.status}`);
 				}
-				return res.text()
+				return res.text();
 			})
 			.then((text) => JSON.parse(text))
 			.then((imgs) => {

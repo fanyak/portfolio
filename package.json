@@ -18,9 +18,11 @@
 	"type": "module",
 	"main": "/site/index.html",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "vitest --environment='jsdom'"
 	},
-	"dependencies": {
-		"@biomejs/biome": "2.5.11"
+	"devDependencies": {
+		"@biomejs/biome": "2.5.11",
+		"jsdom": "29.1.1",
+		"vitest": "5.0.0"
 	}
 }
