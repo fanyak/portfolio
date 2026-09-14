@@ -172,7 +172,7 @@ select {
 }
 
 .nav-links a {
-	color: rgb(26, 26, 26, 0.99) /* rgba(255, 255, 255, 0.85)*/;
+	color: var(--nav-text) /* rgba(255, 255, 255, 0.85)*/;
 
 	font-family: var(--font-ui);
 	font-size: 0.9rem;
@@ -993,9 +993,10 @@ details > summary {
 	.auto-dark {
 		--bg: #121212;
 		--text: rgb(238, 238, 238);
-		--text-muted: #aaaaaa;
+		--text-muted: rgb(170, 170, 170);
 		--text-code: rgb(238, 238, 238) /*rgb(248 134 82)*/;
 		--text-gradient-highlight: 45, 44, 44;
+		--nav-text: rgb(170, 170, 170);
 
 		--border: #303030;
 		--accent: rgb(211 146 114);
