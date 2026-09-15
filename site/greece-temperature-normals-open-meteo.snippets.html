@@ -374,7 +374,7 @@ def loess_cross_val(df, period=period, fracs=fracs) -> np.ndarray:
       # predict using linear interpolation (np.interp)
       predict = np.interp(test['yd'], x, y)
       oof[test.index] = predict
-      oof_errors[i] = rmsq(test.p50, predict, 0) # errors for fold i
+      oof_errors[i] = rmsq(test.p50, predict, 0)
     
     print(f"Errors for frac = {frac}: {oof_errors}")
     loess_oof_predictions.append(oof) # oof is an indexed, complete frame
@@ -384,7 +384,7 @@ def loess_cross_val(df, period=period, fracs=fracs) -> np.ndarray:
   return np.array(loess_oof_predictions), np.array(loess_oof_perf)
 </template>
 <template id="c21-template">
-    station      best_k  harmonic_lowest_error  best_frac  loess_lowest_error
+     station      best_k  harmonic_lowest_error  best_frac  loess_lowest_error
   0  thessaloniki  4       2.476189              0.05       1.778037
   1  pirgos        4       2.161326              0.05       1.488240
   2  athens        4       2.526519              0.05       1.786182
@@ -396,7 +396,6 @@ def loess_cross_val(df, period=period, fracs=fracs) -> np.ndarray:
   8  grevena       4       2.865827              0.05       1.964388
   9  polygyros     4       3.328481              0.05       2.405829
   10 national      4       3.552164              0.05       1.484533
-
 </template>
 </body>
 </html>
