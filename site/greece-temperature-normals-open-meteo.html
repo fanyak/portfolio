@@ -38,6 +38,12 @@
 		<!-- class="auto-dark"-->
 		<!-- class="auto-dark"-->
 		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
 		<!-- <div
 			style="position:absolute; top: 0; bottom:0;left:0; right:0; z-index:-1;"
 		>
@@ -816,9 +822,27 @@
 
 					<h4>Smooth the Data using best-K</h4>
 					<p>
-						I fitted the national climatology data using <code>K = 4</code>, the
-						cross-validated value,
+						I fitted the national climatology data (aggregated median value for
+						366 days) using <code>K = 4</code>, the cross-validated best value.
 					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c18b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c18">
+							</code>
+						</pre>
+						</div>
+					</details>
 					<div class="block">
 						<div class="image-container">
 							<figure>
@@ -856,10 +880,93 @@
 						To run the Loess regression we use the climatology data (one
 						summarized value per day for all the years), not the raw daily data.
 						However, since the model uses the frac*N closest points we have to
-						make day 366 and day 1 be neighbours. To fix this we glue three
+						make day 366 and day 1 be neighbours. To do this we glue three
 						copies of the climatology end to end, smooth the concatenated data,
 						and keep only the middle copy
 					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c19b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c19">
+							</code>
+						</pre>
+						</div>
+					</details>
+					<p>
+						Note: the <code>statsmodel lowess</code> implementation take a
+						second (hyper)parameter <code>it</code>. If <code>it > 1</code>,
+						then further weighted local linear regressions are performed. This
+						is most useful when the noise has "extremely heavy tails" (Cauchy
+						noise). Since our climatology noise is closer to a t-distribution
+						than to Cauchy, I kept the default <code>it = 1</code>.
+					</p>
+					<p>
+						The <code>frac</code> parameter controls roughly how much of the
+						data is used locally for each fitted point.
+						<ul>
+							<li>frac=0.01 → follows the data closely, potentially noisy</li>
+							<li>frac=0.1 → moderate smoothing</li>
+							<li>frac=0.3 → very smooth, potentially hiding real structure</li>
+						</ul>
+					</p>
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img
+									id="gtnom6"
+									src=""
+									alt="Smoothing with different frac values"
+								>
+								<figcaption>Smoothing with different frac values</figcaption>
+							</figure>
+						</div>
+					</div>
+					<p>
+						We can see right away that the best value is close to 0.05. Again,
+						cross-validation will tell us what the best value is.
+					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c20b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c20">
+							</code>
+						</pre>
+						</div>
+					</details>
+					<p>
+						Note: <code>statsmodel lowess</code> doesn't have a 'predict'
+						method, so we predict using linear interpolation <code>np.interp</code>.
+					</p>
+					<p>
+						Here is the updated results table with the scores for each city:
+					</p>
+
+					<div class="code-demo">
+						<pre class="highlight-last">
+							<code id="c21">
+							</code>
+						</pre>
+					</div>
 					<!------>
 					<h2>Interactive content</h2>
 
@@ -960,7 +1067,12 @@
 			String.raw`(?<=\bdef\s+)[A-Za-z_]\w*`,
 			String.raw`\breturn\b`,
 			String.raw`\bfor\b`,
+			String.raw`\bif\b`,
+			String.raw`\belse\b`,
+			String.raw`\belif\b`,
 			String.raw`\bin\b`,
+			String.raw`\bwith\b`,
+			String.raw`\bopen\b`,
 			String.raw`<=`,
 			String.raw`=>`,
 			String.raw`==`,
@@ -1000,7 +1112,9 @@
 					const matchSpan = document.createElement("span");
 					matchSpan.textContent = match;
 					if (
-						["=", "==", "<=", "=>", "+=", "-=", "+", "*", "/"].includes(match)
+						["=", "==", "<=", "=>", "+=", "-=", "+", "*", "/", "in"].includes(
+							match,
+						)
 					) {
 						matchSpan.classList.add("sign");
 					} else if (match === "def" || match === "async") {
@@ -1013,10 +1127,12 @@
 					} else if (match.includes(".")) {
 						matchSpan.classList.add("method");
 					} else {
-						matchSpan.classList.add("varchar");
 						let fIndex = s.indexOf("def ");
 						if (fIndex > -1 && m.index - fIndex <= 5) {
 							functionsDeclared.push(m[0]);
+							matchSpan.classList.add("method");
+						} else {
+							matchSpan.classList.add("varchar");
 						}
 
 						// range.setStart(node, index);

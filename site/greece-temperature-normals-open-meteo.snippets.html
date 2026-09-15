@@ -99,7 +99,7 @@ year	missing count
 <template id="c6-template">
 def load_data() -> pd.DataFrame:
   stations = pd.read_csv(
-    '/stations_data/meteo_data/stations_list.csv',
+    f"/stations_data/meteo_data/stations_list.csv",
     header=0,
     index_col=None,
   )
@@ -108,7 +108,7 @@ def load_data() -> pd.DataFrame:
 
   for name in station_names:
     station_df = pd.read_csv(
-        f'/stations_data/meteo_data/stations_data/{name}.csv',
+        f"/stations_data/meteo_data/stations_data/{name}.csv",
         header=0,
         index_col=None,
     )
@@ -300,7 +300,7 @@ def harmonic_cross_val(df: pd.DataFrame, K:int) -> tuple[np.ndarray, np.array]:
       oof_errors[i] = rmsq(test.t_mean, np.array(fold_predictions), 0)
 
     print(f"Errors for K = {k}: {oof_errors}")
-    k_oof_predictions.append(oof) # oof is an indexed, *complete* frame
+    k_oof_predictions.append(oof) # oof is an indexed, complete frame
     k_oof_perf.append(np.mean(oof_errors))
     print(f"Finished CV for K = {k}")
 
@@ -319,6 +319,84 @@ def harmonic_cross_val(df: pd.DataFrame, K:int) -> tuple[np.ndarray, np.array]:
 8  grevena       4       2.865827
 9  polygyros     4       3.328481
 10 national      4       3.552164
+</template>
+<template id="c18-template">
+def fit_harmonic(df:pd.DataFrame, k:np.int16,  y:np.float32)-> pd.DataFrame:
+  # intercept column
+  X_harmonic =  pd.DataFrame(np.ones(df.shape[0]), index=df.index, columns=['const'])
+  X_harmonic = X_harmonic.join(make_harmonic(df.yd, k))
+  model = sm.OLS(df[y], X_harmonic)
+  results = model.fit()
+  harmonic_fitted = results.fittedvalues
+  df_harmonic_fitted = df.copy()
+  df_harmonic_fitted.loc[:, [y]] = harmonic_fitted.astype(np.float32)
+  return df_harmonic_fitted
+</template>
+<template id="c19-template">
+def fit_loess(yd: pd.Series, y: pd.Series, **params) -> pd.DataFrame:
+
+  period = params.get('period', 366)
+  frac = params.get('frac', 0.1)
+  it = params.get('it', 1)
+  label = params.get('label', 'p50')
+
+  # concatenate the vectors row on row
+  X = pd.concat([yd-period, yd, yd+period], ignore_index=True, axis = 0)
+  y = pd.concat([y, y, y], ignore_index=True, axis = 0)
+
+  # Note: The result of lowess with default `return_sorted=True` is an array where the first column is (the input) X and the second is the smoothed Y
+  smoothed = sm.nonparametric.lowess(y.values, X.values, frac=frac, it=it, is_sorted=True)
+  smoothed_df = pd.DataFrame(smoothed, columns = ['yd', label])
+  smoothed_df.yd = smoothed_df.yd.astype(np.int32)
+
+  return smoothed_df[(smoothed_df.yd > 0) & (smoothed_df.yd < 367)].reset_index(drop=True)
+</template>
+<template id="c20-template">
+def loess_cross_val(df, period=period, fracs=fracs) -> np.ndarray:
+
+  loess_oof_predictions = []
+  loess_oof_perf = []
+
+  # for frac, it in grid:
+  for frac in fracs:
+    # fold cache
+    oof = np.zeros(period)
+    oof_errors = np.zeros(n_splits)
+
+    for i, (train_idx, test_idx) in enumerate(cv.split(years)):
+      train = create_clim(df, years[train_idx]).reset_index(drop=False)
+      test = create_clim(df, years[test_idx]).reset_index(drop=False)
+      #fit
+      res = fit_loess(train['yd'], train['p50'], frac=frac, it=1)
+      x = res.yd.values
+      y = res.p50.values
+      # loess doesn't have a 'predict' method so we
+      # predict using linear interpolation (np.interp)
+      predict = np.interp(test['yd'], x, y)
+      oof[test.index] = predict
+      oof_errors[i] = rmsq(test.p50, predict, 0) # errors for fold i
+    
+    print(f"Errors for frac = {frac}: {oof_errors}")
+    loess_oof_predictions.append(oof) # oof is an indexed, complete frame
+    loess_oof_perf.append(np.mean(oof_errors))
+    print(f"Finished CV for frac = {frac}, it = 1")
+
+  return np.array(loess_oof_predictions), np.array(loess_oof_perf)
+</template>
+<template id="c21-template">
+    station      best_k  harmonic_lowest_error  best_frac  loess_lowest_error
+  0  thessaloniki  4       2.476189              0.05       1.778037
+  1  pirgos        4       2.161326              0.05       1.488240
+  2  athens        4       2.526519              0.05       1.786182
+  3  xanthi        4       2.831213              0.05       2.029957
+  4  nevrokopi     4       3.147449              0.05       2.181745
+  5  larissa       4       2.731971              0.05       1.889591
+  6  lefkada       4       2.140458              0.05       1.470341
+  7  heraclion     4       2.337222              0.05       1.624932
+  8  grevena       4       2.865827              0.05       1.964388
+  9  polygyros     4       3.328481              0.05       2.405829
+  10 national      4       3.552164              0.05       1.484533
+
 </template>
 </body>
 </html>
