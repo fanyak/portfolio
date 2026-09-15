@@ -54,6 +54,7 @@
 	--card-bg: #fafafa;
 
 	--text-code-equal-sign: rgb(45, 84, 99);
+	--text-code-method: rgb(80 84 33);
 	--text-code-function: rgb(139 52 12);
 	--text-code-varchar: purple;
 
@@ -735,8 +736,12 @@ details > summary {
 	display: block;
 }
 
-.code-demo .equal_sign {
+.code-demo .sign {
 	color: var(--text-code-equal-sign);
+}
+
+.code-demo .method {
+	color: var(--text-code-method);
 }
 
 .code-demo .function {
@@ -748,7 +753,7 @@ details > summary {
 }
 
 .code-demo .varchar {
-	color: var(--text-code-varchar)
+	color: var(--text-code-varchar);
 }
 
 .code-copy-button {
@@ -1007,6 +1012,7 @@ details > summary {
 
 		--text-code-function: orange;
 		--text-code-equal-sign: skyblue;
+		--text-code-method: rgb(178 187 81);
 		--text-code-varchar: rgb(219, 139, 219);
 	}
 

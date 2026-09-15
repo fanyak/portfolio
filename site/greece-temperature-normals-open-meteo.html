@@ -35,6 +35,9 @@
 
 	<body class="auto-dark"><!-- class="auto-dark"-->
 		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
 		<!-- <div
 			style="position:absolute; top: 0; bottom:0;left:0; right:0; z-index:-1;"
 		>
@@ -643,7 +646,7 @@
 								with a 366-day period.</em
 							>
 						</blockquote>
-						
+
 						<p>
 							The <em>sum of the sine/cosine pairs</em> are linear predictors,
 							as in OLS. An instance of this model takes two parameters:
@@ -878,9 +881,9 @@
 		</main>
 
 		<script>
-			/**
-			 * simulate copy event 
-			**/
+		/**
+		 * simulate copy event
+		 **/
 		function copy(c) {
 			try {
 				let copyText = document.querySelector(`#${c}`);
@@ -894,14 +897,12 @@
 			}
 		}
 
-		const code_snippets = Array.from(
+		const codeSnippets = Array.from(
 			document.querySelectorAll(`.code-copy-button[id^=c]`),
 		);
-		code_snippets.forEach((el) => {
+		codeSnippets.forEach((el) => {
 			el.addEventListener("click", copy.bind(null, el.id.slice(0, -1)));
 		});
-
-		let prevElem;
 
 		function zoomToggle(event) {
 			event.stopPropagation(); // don't propagate to the document level
@@ -914,13 +915,13 @@
 			}
 		}
 
-		const image_snippets = Array.from(
+		const imageSnippets = Array.from(
 			document.querySelectorAll(
 				".image-container:not(:has(img[class^=fixed])) figure",
 			),
 		);
 
-		image_snippets.forEach((el) => {
+		imageSnippets.forEach((el) => {
 			el.addEventListener("click", zoomToggle, (useCapture = true));
 			el.addEventListener("mouseleave", () => {
 				el.parentNode.classList.remove("zoom-toggle");
@@ -928,7 +929,7 @@
 		});
 
 		document.body.addEventListener("click", function () {
-			image_snippets.forEach((el) => {
+			imageSnippets.forEach((el) => {
 				el.classList.remove("zoom-toggle");
 			});
 		});
@@ -951,48 +952,89 @@
 
 			return lines.map((line) => line.slice(baseIndent)).join("\n");
 		}
-
-		function codeParse(codeString) {
-			const regex =
-				/\bdef\b|\basync\b|\bimport\b|\bcurl\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\b\d+\b|\b\d+\.\d+\b|->/g;
+		const patterns = [
+			String.raw`\bdef\b`,
+			String.raw`\basync\b`,
+			String.raw`\bimport\b`,
+			String.raw`\bcurl\b`,
+			String.raw`(?<=\bdef\s+)[A-Za-z_]\w*`,
+			String.raw`\breturn\b`,
+			String.raw`\bfor\b`,
+			String.raw`\bin\b`,
+			String.raw`<=`,
+			String.raw`=>`,
+			String.raw`==`,
+			String.raw`>`,
+			String.raw`<`,
+			String.raw`=`,
+			String.raw`\+`,
+			String.raw`\*`,
+			String.raw`\/{1}`,
+			String.raw`\b\d+\b`,
+			String.raw`\b\d+\.\d+\b`,
+			String.raw`->`,
+			String.raw`\.[A-Za-z]+\b`,
+		];
+		function codeParse(codeString, functionsDeclared = []) {
+			// const regex =
+			// 	/\bdef\b|\basync\b|\bimport\b|\bcurl\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\+|\*|\/{1}|\b\d+\b|\b\d+\.\d+\b|->|\.[A-Za-z]+\b/g;
+			const regex = new RegExp(patterns.join("|"), "g");
 			const spans = codeString.split("\n").map((s) => {
-				if (s.trim().startsWith("#")) {
-					return s;
-				}
-				if (s.trim().startsWith("print")) {
-					return s;
-				}
 				const span = document.createElement("span");
-				// const equal_signs = Array.from(s.matchAll(/=+/g))
+
+				if (
+					s.trim().startsWith("#") ||
+					s.trim().startsWith("print") ||
+					s.trim().includes('f"')
+				) {
+					span.appendChild(document.createTextNode(s));
+					return span;
+				}
 				const matches = Array.from(s.matchAll(regex));
-				let current_index = 0;
+				let currentIndex = 0;
 				for (let m of matches) {
 					const match = m[0];
-					const text_node = document.createTextNode(
-						s.substring(current_index, m.index),
+					const textNode = document.createTextNode(
+						s.substring(currentIndex, m.index),
 					);
-					const match_span = document.createElement("span");
-					match_span.textContent = match;
-					if (match === "=" || match === "==") {
-						match_span.classList.add("equal_sign");
+					const matchSpan = document.createElement("span");
+					matchSpan.textContent = match;
+					if (
+						["=", "==", "<=", "=>", "+=", "-=", "+", "*", "/"].includes(match)
+					) {
+						matchSpan.classList.add("sign");
 					} else if (match === "def" || match === "async") {
-						match_span.classList.add("function");
+						matchSpan.classList.add("function");
 					} else if (Number.isFinite(parseInt(match))) {
 						if (m.index == 0) {
 							continue;
 						}
-						match_span.classList.add("number");
+						matchSpan.classList.add("number");
+					} else if (match.includes(".")) {
+						matchSpan.classList.add("method");
 					} else {
-						match_span.classList.add("varchar");
-					}					
-					span.appendChild(text_node);
-					span.appendChild(match_span);
-					current_index = m.index + match.length;
+						matchSpan.classList.add("varchar");
+						let fIndex = s.indexOf("def ");
+						if (fIndex > -1 && m.index - fIndex <= 5) {
+							functionsDeclared.push(m[0]);
+						}
+
+						// range.setStart(node, index);
+						// range.setEnd(node, index + "world".length);
+
+						// const span = document.createElement("span");
+						// span.className = "highlight";
+
+						// range.surroundContents(span);
+					}
+					span.appendChild(textNode);
+					span.appendChild(matchSpan);
+					currentIndex = m.index + match.length;
 				}
-				const final_text_node = document.createTextNode(
-					s.substring(current_index),
+				const finalTextNode = document.createTextNode(
+					s.substring(currentIndex),
 				);
-				span.appendChild(final_text_node);
+				span.appendChild(finalTextNode);
 				return span;
 			});
 			return spans;
@@ -1008,8 +1050,8 @@
 				const html = await response.text();
 
 				const doc = new DOMParser().parseFromString(html, "text/html");
-
 				document.querySelectorAll('code[id^="c"]').forEach((codeBlock) => {
+					const functionsDeclared = [];
 					const template = doc.getElementById(`${codeBlock.id}-template`);
 					if (!(template instanceof HTMLTemplateElement)) {
 						return;
@@ -1017,11 +1059,14 @@
 					codeBlock.replaceChildren(template.content.cloneNode(true));
 					codeBlock.textContent = normalizeCode(codeBlock.textContent);
 
-					if (!template.dataset.noParse){
-						const spans = codeParse(codeBlock.textContent);
+					if (!template.dataset.noParse) {
+						const spans = codeParse(codeBlock.textContent, functionsDeclared);
 						codeBlock.replaceChildren(...spans);
 					}
-					
+					// for next iterations of templates highlight the functions that were declared in previous
+					functionsDeclared.forEach((f) => {
+						patterns.push(String.raw`\b${f}\b`);
+					});
 				});
 			} catch (e) {
 				console.log(e);
