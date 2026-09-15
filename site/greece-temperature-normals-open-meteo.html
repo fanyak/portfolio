@@ -878,6 +878,9 @@
 		</main>
 
 		<script>
+			/**
+			 * simulate copy event 
+			**/
 		function copy(c) {
 			try {
 				let copyText = document.querySelector(`#${c}`);
@@ -951,7 +954,7 @@
 
 		function codeParse(codeString) {
 			const regex =
-				/\bdef\b|\basync\b|\bimport\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\b\d+\b|\b\d+\.\d+\b|->/g;
+				/\bdef\b|\basync\b|\bimport\b|\bcurl\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\b\d+\b|\b\d+\.\d+\b|->/g;
 			const spans = codeString.split("\n").map((s) => {
 				if (s.trim().startsWith("#")) {
 					return s;
@@ -965,6 +968,9 @@
 				let current_index = 0;
 				for (let m of matches) {
 					const match = m[0];
+					const text_node = document.createTextNode(
+						s.substring(current_index, m.index),
+					);
 					const match_span = document.createElement("span");
 					match_span.textContent = match;
 					if (match === "=" || match === "==") {
@@ -978,10 +984,7 @@
 						match_span.classList.add("number");
 					} else {
 						match_span.classList.add("varchar");
-					}
-					const text_node = document.createTextNode(
-						s.substring(current_index, m.index),
-					);
+					}					
 					span.appendChild(text_node);
 					span.appendChild(match_span);
 					current_index = m.index + match.length;
@@ -1013,6 +1016,7 @@
 					}
 					codeBlock.replaceChildren(template.content.cloneNode(true));
 					codeBlock.textContent = normalizeCode(codeBlock.textContent);
+
 					if (!template.dataset.noParse){
 						const spans = codeParse(codeBlock.textContent);
 						codeBlock.replaceChildren(...spans);
@@ -1035,7 +1039,7 @@
 		const srsc = fetch("./assets/asset-store.txt")
 			.then((res) => {
 				if (!res.ok) {
-					throw new Error(`Response not successfule - status: ${res.status}`);
+					throw new Error(`Response not successful - status: ${res.status}`);
 				}
 				return res.text();
 			})
