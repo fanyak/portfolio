@@ -357,7 +357,7 @@ def loess_cross_val(df, period=period, fracs=fracs) -> np.ndarray:
   loess_oof_predictions = []
   loess_oof_perf = []
 
-  # for frac, it in grid:
+  # for frac:
   for frac in fracs:
     # fold cache
     oof = np.zeros(period)
@@ -396,6 +396,9 @@ def loess_cross_val(df, period=period, fracs=fracs) -> np.ndarray:
   8  grevena       4       2.865827              0.05       1.964388
   9  polygyros     4       3.328481              0.05       2.405829
   10 national      4       3.552164              0.05       1.484533
+</template>
+<template id="c22-template" data-no-parse="true">
+array([0., 0.025, 0.05 , 0.075, 0.1  , 0.125, 0.15 , 0.175])
 </template>
 </body>
 </html>

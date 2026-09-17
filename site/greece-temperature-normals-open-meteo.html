@@ -769,7 +769,7 @@
 						iterations are used to calculate the estimated average (mean)
 						performance for each <code>K</code>.
 					</p>
-					<details open>
+					<details>
 						<summary>Code</summary>
 						<div class="code-demo">
 							<div class="code-demo-header">
@@ -935,7 +935,7 @@
 						We can see right away that the best value is close to 0.05. Again,
 						cross-validation will tell us what the best value is.
 					</p>
-					<details>
+					<details open>
 						<summary>Code</summary>
 						<div class="code-demo">
 							<div class="code-demo-header">
@@ -957,16 +957,48 @@
 						Note: <code>statsmodel lowess</code> doesn't have a 'predict'
 						method, so we predict using linear interpolation <code>np.interp</code>.
 					</p>
+					<details open>
+					<summary>Code</summary>
+					<div class="code-demo">
+						<div class="code-demo-header">
+							fracs = np.arange(0.0, 0.2, 0.025)						
+						</div>
+						<pre>
+							<code id="c22">
+							</code>
+						</pre>
+					</div>
+					</details>
 					<p>
-						Here is the updated results table with the scores for each city:
+						Here is the updated results table with the scores for each city. Overall, this smoothing function recorded lower errors than the Harmonic Smoothing:
 					</p>
-
 					<div class="code-demo">
 						<pre class="highlight-last">
 							<code id="c21">
 							</code>
 						</pre>
 					</div>
+					<p>Best national value is <code>frac=0.05</code>. The number of data points used in each local regression is <code>period*national_loess_best_frac=18.3</code>.
+						<br>However, we don't see a pronounced difference in the error between this and other values.</p>						
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img id="gtnom7" src="" alt="Cross-validated error vs National loess fractions (using it = 1)">
+									<figcaption>Cross-validated error vs National loess fractions (using it = 1)</figcaption>
+							</figure>
+						</div>
+					</div>
+					<h2>Compare Results</h2>
+					<p>Here is a plot showing the smoothed national data using Harmonic and Loess vs the raw data. </p>
+					<div class="block">
+						<div class="image-container">
+							<figure>
+								<img id="gtnom8" src="" alt="Raw vs Loess vs Harmonic Climatology (2012-2023)">
+									<figcaption>Raw vs Loess vs Harmonic Climatology (2012-2023)</figcaption>
+							</figure>
+						</div>
+					</div>
+					<p>The Loess and Harmonic curves all  but overlap!</p>
 					<!------>
 					<h2>Interactive content</h2>
 
@@ -1090,10 +1122,11 @@
 		function codeParse(codeString, functionsDeclared = []) {
 			// const regex =
 			// 	/\bdef\b|\basync\b|\bimport\b|\bcurl\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\+|\*|\/{1}|\b\d+\b|\b\d+\.\d+\b|->|\.[A-Za-z]+\b/g;
+			
 			const regex = new RegExp(patterns.join("|"), "g");
+			
 			const spans = codeString.split("\n").map((s) => {
 				const span = document.createElement("span");
-
 				if (
 					s.trim().startsWith("#") ||
 					s.trim().startsWith("print") ||
