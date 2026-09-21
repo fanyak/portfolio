@@ -350,8 +350,8 @@ def fit_loess(yd: pd.Series, y: pd.Series, **params) -> pd.DataFrame:
   label = params.get('label', 'p50')
 
   # concatenate the vectors row on row
-  X = pd.concat([yd-period, yd, yd+period], ignore_index=True, axis = 0)
-  y = pd.concat([y, y, y], ignore_index=True, axis = 0)
+  X = pd.concat([yd-period, yd, yd+period], ignore_index=True, axis=0)
+  y = pd.concat([y, y, y], ignore_index=True, axis=0)
 
   # Note: The result of lowess with default `return_sorted=True` is an array where the first column is (the input) X and the second is the smoothed Y
   smoothed = sm.nonparametric.lowess(y.values, X.values, frac=frac, it=it, is_sorted=True)

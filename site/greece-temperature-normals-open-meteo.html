@@ -1182,7 +1182,7 @@
 						</pre>
 					</div>
 					<p>
-						Hopefullly, the National Data Portal will keep adding records from
+						Hopefully, the National Data Portal will keep adding records from
 						the meteorological stations, so that I can renew this chart yearly!
 					</p>
 					<div class="demo">
@@ -1274,7 +1274,7 @@
 
 			return lines.map((line) => line.slice(baseIndent)).join("\n");
 		}
-		const patterns = [
+		const patterns_static = [
 			String.raw`\bdef\b`,
 			String.raw`\basync\b`,
 			String.raw`\bimport\b`,
@@ -1288,6 +1288,8 @@
 			String.raw`\bin\b`,
 			String.raw`\bwith\b`,
 			String.raw`\bopen\b`,
+			String.raw`\brange\b`,
+			String.raw`\blen\b`,
 			String.raw`<=`,
 			String.raw`=>`,
 			String.raw`==`,
@@ -1300,8 +1302,9 @@
 			String.raw`\b\d+\b`,
 			String.raw`\b\d+\.\d+\b`,
 			String.raw`->`,
-			String.raw`\.[A-Za-z]+\b`,
+			String.raw`\.[A-Za-z_]+\b`,
 		];
+		const patterns = [...patterns_static]
 		function codeParse(codeString, functionsDeclared = []) {
 			// const regex =
 			// 	/\bdef\b|\basync\b|\bimport\b|\bcurl\b|(?<=\bdef\s+)[A-Za-z_]\w*|\breturn\b|\bfor\b|\bin\b|<=|=>|==|>|<|=|\+|\*|\/{1}|\b\d+\b|\b\d+\.\d+\b|->|\.[A-Za-z]+\b/g;
@@ -1340,12 +1343,13 @@
 							continue;
 						}
 						matchSpan.classList.add("number");
-					} else if (match.includes(".")) {
+					} else if (new RegExp(patterns_static.at(-1)).test(match)) {
 						matchSpan.classList.add("method");
 					} else {
-						let fIndex = s.indexOf("def ");
-						if (fIndex > -1 && m.index - fIndex <= 5) {
-							functionsDeclared.push(m[0]);
+						// let fIndex = s.indexOf("def ");
+						// if (fIndex > -1 && m.index - fIndex <= 5) {
+						if (new RegExp(patterns_static.at(4)).test(s)) {
+							functionsDeclared.push(match);
 							matchSpan.classList.add("method");
 						} else {
 							matchSpan.classList.add("varchar");
