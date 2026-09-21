@@ -46,6 +46,8 @@
 		<!-- class="auto-dark"-->
 		<!-- class="auto-dark"-->
 		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
+		<!-- class="auto-dark"-->
 		<!-- <div
 			style="position:absolute; top: 0; bottom:0;left:0; right:0; z-index:-1;"
 		>
@@ -141,8 +143,9 @@
 						daily climatological reference, which allows us to compare data
 						without the day-to-day noise. Creating a
 						<strong>climatological normal</strong>, a
-						<code>normal year</code> curve, against which we can plot a year's
-						values is the theme of Dominic Royé's article.
+						<code>normal year</code>
+						curve, against which we can plot a year's values is the theme of
+						Dominic Royé's article.
 					</p>
 
 					<p>
@@ -557,7 +560,8 @@
 						The <code>national_mean_temperature_20121_1013</code> dataframe is
 						the reference set that I will use to create the "normal year"
 						temperatures. The 2025 data will be compared against this.
-						<strong>Open-Meteo</strong> has daily temperatures for year
+						<strong>Open-Meteo</strong>
+						has daily temperatures for year
 						<strong>2025</strong>, but these are not readily grouped by station.
 						<br>In order to fetch data pnly for the stations that are in the
 						reference set I used the <strong>longitude</strong> and
@@ -567,8 +571,9 @@
 					</p>
 					<p>
 						I made sequential requests for
-						<strong>pairs of stations</strong> and cached each result in a list
-						(you could try requesting more stations at each iteration).
+						<strong>pairs of stations</strong>
+						and cached each result in a list (you could try requesting more
+						stations at each iteration).
 					</p>
 					<details>
 						<summary>Code</summary>
@@ -641,15 +646,13 @@
 
 					<h2>Smooth the Curve</h2>
 					<p>
-						Next step is to select the <strong>best</strong> smoothing function. This is a model
-						selection task: pick the member of a family of
-						smoothers the best predicts unseen data, using
-						cross-validation.
+						Next step is to select the <strong>best</strong> smoothing function.
+						This is a model selection task: pick the member of a family of
+						smoothers the best predicts unseen data, using cross-validation.
 					</p>
 					<p>
 						As in the original article, the 2 smoothers that I evaluated are
-						<code>Harmonic Regression</code>.
-						and
+						<code>Harmonic Regression</code>. and
 						<code>Locally weighted regression</code>
 					</p>
 
@@ -688,8 +691,8 @@
 					</p>
 					<p>
 						While <code>period</code> is fixed, parameter <code>k</code> is a
-						hyperparameter that we need to tune in order to get the model
-						that best predicts the 2025 data.
+						hyperparameter that we need to tune in order to get the model that
+						best predicts the 2025 data.
 					</p>
 					<h4>Hyperparameter tuning</h4>
 					<p>
@@ -715,8 +718,8 @@
 						</div>
 					</details>
 					<p>
-						The transformed data is used in the cross-valiation process.
-						Bellow are some useful settings:
+						The transformed data is used in the cross-valiation process. Bellow
+						are some useful settings:
 					</p>
 					<div class="code-demo">
 						<div class="code-demo-header">
@@ -876,9 +879,10 @@
 
 					<h3 id="loess-regression">Locally weighted regression</h3>
 					<p>
-						<code>Loess</code> (lowess) works locally, meaning that to make an estimate of a value it
-						uses a fraction of the data that is near-by that value. The size of
-						the fraction is a hyperparameter of the model.
+						<code>Loess</code>
+						(lowess) works locally, meaning that to make an estimate of a value
+						it uses a fraction of the data that is near-by that value. The size
+						of the fraction is a hyperparameter of the model.
 					</p>
 					<p>
 						Specifically, in the statsmodel package(
@@ -893,13 +897,15 @@
 						</blockquote>
 					</p>
 					<p>
-						The <code>loess regression</code> runs on data structured as <strong>climatology</strong>, meaning that instead of the raw daily points for years 2012-2023 it needs one
-						summarized value per day over all the years.
-						This however creates a problem: since the model uses the <code>frac*N</code> closest points we have to
-						make day 366 and day 1 be adjacent, since they are <em>calendar adjacent</em>. 
-						As in the original article, to adress this I glued three
-						copies of the climatology end to end, smoothed the concatenated data,
-						and kept only the middle copy.
+						The <code>loess regression</code> runs on data structured as
+						<strong>climatology</strong>, meaning that instead of the raw daily
+						points for years 2012-2023 it needs one summarized value per day
+						over all the years. This however creates a problem: since the model
+						uses the <code>frac*N</code> closest points we have to make day 366
+						and day 1 be adjacent, since they are <em>calendar adjacent</em>. As
+						in the original article, to adress this I glued three copies of the
+						climatology end to end, smoothed the concatenated data, and kept
+						only the middle copy.
 					</p>
 					<details>
 						<summary>Code</summary>
@@ -951,8 +957,10 @@
 					<p>
 						It is easy to see that the best value is close to 0.05. Again,
 						cross-validation will tell us what the best value is. <br>
-						I followed the same process as in the harmonic regression, 
-						expept of course now the aim is to find the best value for the <code>frac</code> hyperparameter.
+						I followed the same process as in the harmonic regression, expept of
+						course now the aim is to find the best value for the
+						<code>frac</code>
+						hyperparameter.
 					</p>
 					<details open>
 						<summary>Code</summary>
@@ -1004,8 +1012,8 @@
 						Best national value is <code>frac=0.05</code>. The number of data
 						points used in each local regression is
 						<code>period*national_loess_best_frac=18.3</code>.
-						<br>Note however, theat there isn't a pronounced difference in the error
-						between this and adjacent values.
+						<br>Note however, theat there isn't a pronounced difference in the
+						error between this and adjacent values.
 					</p>
 					<div class="block">
 						<div class="image-container">
@@ -1051,9 +1059,10 @@
 					</p>
 					<h3>Gather extreme differences</h3>
 					<p>
-						First, I merged the data-driven <strong>normal</strong> (the climatology table where
-						the median (p50) and typical range values (p5 and p95) have been fitted using the
-						harmonic smoother) to 2025's climatology.
+						First, I merged the data-driven <strong>normal</strong> (the
+						climatology table where the median (p50) and typical range values
+						(p5 and p95) have been fitted using the harmonic smoother) to 2025's
+						climatology.
 					</p>
 					<div class="code-demo">
 						<pre>
@@ -1061,7 +1070,11 @@
 							</code>
 						</pre>
 					</div>
-					<p>Next, I computed the anomaly (difference between the <em>normal</em> and the 2025 values):</p>
+					<p>
+						Next, I computed the anomaly (difference between the
+						<em>normal</em>
+						and the 2025 values):
+					</p>
 					<div class="code-demo">
 						<pre>
 							<code id="c24">
@@ -1102,10 +1115,11 @@
 							</code>
 						</pre>
 					</div>
-					<h3>The Canvas</h3>
+					<h3>The Chart</h3>
 					<p>
 						I followed the original article's process for drawing the chart
-						using <code>python's matplotlib</code> (instead of <code>ggplot</code>).<br>
+						using <code>python's matplotlib</code> (instead of
+						<code>ggplot</code>).<br>
 						You can check the code for that in the colab notebool that is
 						available at github.
 					</p>
@@ -1117,11 +1131,60 @@
 							</figure>
 						</div>
 					</div>
-					<p>The black smooth curve is the <code>climatology normal</code> calculated using <code>Harmonic Regression</code> (<code>K=4</code>) with data from the National Portal for years 2012-2023.<br>
-					The gray band is the <code>5 to 95 percentile</code> typical range for the climatology normal.<br>
-				  The jagged line tracks the <code>mean temperature</code> for each day in the year 2025(Open-Meteo data).<br>
-				  The red and blue colored peaks represent the points in the 2025 daily data the fall outside the typical range of the climatolgy normal.</p>
+					<p>
+						The black smooth curve is the
+						<code>climatology normal</code>
+						calculated using
+						<code>Harmonic Regression</code>
+						(<code>K=4</code>) with data from the National Portal for years
+						2012-2023.<br>
+						The gray band is the <code>5 to 95 quantile</code> typical range for
+						the climatology normal.<br>
+						The noise/jagged line tracks the <code>mean temperature</code> for
+						each day in the year 2025 (Open-Meteo data).<br>
+						The red and blue colored peaks represent the points in the 2025
+						daily data the fall outside the typical range of the climatolgy
+						normal.
+					</p>
 					<!--DEMO-->
+					<h2>Final Notes</h2>
+					<p>
+						Since our historical data goes back to only 2012, the chart doesn't
+						paint as dramatic a picture as in the original article. <br>
+						In total there were 9 days in 2025 when the mean temperature fell
+						outside the typical range: 9 instances when the temperature exceeded
+						the 95th quantile and 1 instance when it fell bellow the 5th
+						quantile.
+					</p>
+					<details>
+						<summary>Code</summary>
+						<div class="code-demo">
+							<div class="code-demo-header">
+								<button
+									title="Copy to Clipboard"
+									class="code-copy-button"
+									id="c27b"
+								>
+									<i class="bi"></i>
+								</button>
+							</div>
+							<pre>
+							<code id="c27">
+							</code>
+						</pre>
+						</div>
+					</details>
+					<div class="code-demo">
+						<pre>
+							<code id="c28">
+					stations,latitude,longitude,altitude
+							</code>
+						</pre>
+					</div>
+					<p>
+						Hopefullly, the National Data Portal will keep adding records from
+						the meteorological stations, so that I can renew this chart yearly!
+					</p>
 					<div class="demo">
 						<div class="demo-header">
 							<span class="demo-title"> Interactive Example </span>
