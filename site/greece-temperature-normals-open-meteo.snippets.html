@@ -49,7 +49,7 @@ curl -L -o stations_data.zip https://data.gov.gr/dataset/cee4f7c1-68b3-4014-b7c7
 def mapToNan(col: pd.Series) -> pd.Series:
   return col.replace({'---': np.nan})
 
-thessaloniki = pd.read_csv(f"/stations_data/meteo_data/stations_data/thessaloniki.csv", header=0,index_col=None)
+thessaloniki = pd.read_csv(f"/stations_data/meteo_data/stations_data/thessaloniki.csv", header=0, index_col=None)
 thessaloniki_clean = thessaloniki.apply(mapToNan, axis=1)
 </template>
 
@@ -168,12 +168,13 @@ dtypes: category(2), datetime64[ns](1), float32(12), int32(1)
 memory usage: 18.4 MB
 </template>
 <template id="c9-template" data-no-parse="1">
-0	2012-01-01	2012	aghiosnikolaos	11.6	1	January
-1	2012-01-02	2012	aghiosnikolaos	11.3	2	January
-2	2012-01-03	2012	aghiosnikolaos	10.8	3	January
-3	2012-01-04	2012	aghiosnikolaos	10.8	4	January
-4	2012-01-05	2012	aghiosnikolaos	11.7	5	January
-...	...	...	...	...	...	...
+   date        year  station         t_mean  yd  month
+0  2012-01-01  2012  aghiosnikolaos    11.6   1  January
+1  2012-01-02  2012  aghiosnikolaos    11.3   2  January
+2  2012-01-03  2012  aghiosnikolaos    10.8   3  January
+3  2012-01-04  2012  aghiosnikolaos    10.8   4  January
+4  2012-01-05  2012  aghiosnikolaos    11.7   5  January
+...       ...   ...             ...     ...  ...      ...
 
 226416 rows × 6 columns
 </template>
@@ -226,6 +227,14 @@ async def get_open_meteo_data(stations: pd.DataFrame):
             openmeteo_daily_data.append(pd.DataFrame(data=daily_data))
 
     return openmeteo_daily_data
+</template>
+<template id="c10a-template">
+                        date         station     t_mean      t_max      t_min
+0  2025-01-01 00:00:00+00:00  aghiosnikolaos  12.602000  16.002001  10.002000
+1  2025-01-02 00:00:00+00:00  aghiosnikolaos  12.260331  16.502001   8.052000
+2  2025-01-03 00:00:00+00:00  aghiosnikolaos  14.433249  18.002001  10.901999
+3  2025-01-04 00:00:00+00:00  aghiosnikolaos  14.649917  16.352001  12.952000
+4  2025-01-05 00:00:00+00:00  aghiosnikolaos  13.702003  16.902000  10.252000
 </template>
 <template id="c11-template">
 def create_clim(df, years_list = []):
