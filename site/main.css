@@ -495,8 +495,8 @@ details > summary {
 		to bottom,
 		transparent 79%,
 		rgb(var(--text-gradient-highlight)) 79%,
-		rgb(var(--text-gradient-highlight)) 87%,
-		transparent 87%
+		rgb(var(--text-gradient-highlight)) 86%,
+		transparent 86%
 	);
 }
 

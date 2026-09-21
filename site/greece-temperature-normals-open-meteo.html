@@ -1206,12 +1206,17 @@
 		/**
 		 * simulate copy event
 		 **/
-		function copy(c) {
+
+		const templates = new Map([])
+
+		function copy(c,e) {
+			e.preventDefault()
 			try {
-				let copyText = document.querySelector(`#${c}`);
+				// let copyText = document.querySelector(`#${c}`);
 				let cp = document.querySelector("#cp");
-				v = copyText.innerHTML;
-				cp.value = v;
+				// v = copyText.innerHTML;
+				// cp.value = v;
+				cp.value = templates.get(c)
 				cp.select();
 				document.execCommand("copy");
 			} catch (e) {
@@ -1394,6 +1399,7 @@
 					}
 					codeBlock.replaceChildren(template.content.cloneNode(true));
 					codeBlock.textContent = normalizeCode(codeBlock.textContent);
+					templates.set(codeBlock.id, codeBlock.textContent)
 
 					if (!template.dataset.noParse) {
 						const spans = codeParse(codeBlock.textContent, functionsDeclared);
