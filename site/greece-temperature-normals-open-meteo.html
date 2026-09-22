@@ -220,7 +220,7 @@
 					</div>
 					<p>
 						<em
-							>The complete for this article is available on
+							>The complete code for this article is available on
 							<a
 								href="https://github.com/fanyak/portfolio/blob/main/Greece_temperature_normals_open_meteo.ipynb"
 								target="new"
@@ -262,7 +262,7 @@
 					<p>
 						Once we unzip the response output we get a <code>.csv</code> file
 						for each of the 54 stations, as well as a file with identifying
-						information for each station (name, latititude, longitude). Here are
+						information for each station (name, latitude, longitude). Here are
 						the first 10 entries from the latter file:
 					</p>
 					<div class="code-demo">
@@ -414,7 +414,7 @@
 					<p>
 						Time to load and merge the <code>.csv</code> data for the rest of
 						the stations to check if there is a pattern in missing values
-						accross the cities. <br>
+						across the cities. <br>
 						To help with that, I created two new columns:
 						<code>Year</code>, so that we can have a shortcut for
 						<code>date.dt.year</code>
@@ -511,7 +511,7 @@
 						dropped this station as well.
 					</p>
 					<p>
-						Bellow is a heat-map for remaining stations with count > 30 for
+						Below is a heat-map for remaining stations with count > 30 for
 						missing daily values per year
 					</p>
 					<div class="block">
@@ -530,7 +530,7 @@
 					</div>
 					<p>
 						In the end, I decided to keep data from 2012 onwards for all
-						remainig stations, fill forwards and backwards for up to 3 days, and
+						remaining stations, fill forwards and backwards for up to 3 days, and
 						then drop any remaining missing values (2653 in total across years
 						and stations).
 					</p>
@@ -557,13 +557,13 @@
 
 					<h3>Getting data for 2025 from Open-Meteo</h3>
 					<p>
-						The <code>national_mean_temperature_20121_1013</code> dataframe is
+						The <code>national_mean_temperature_2012_2023</code> dataframe is
 						the reference set that I will use to create the "normal year"
 						temperatures. The 2025 data will be compared against this.
 						<strong>Open-Meteo</strong>
 						has daily temperatures for year
 						<strong>2025</strong>, but these are not readily grouped by station.
-						<br>In order to fetch data pnly for the stations that are in the
+						<br>In order to fetch data only for the stations that are in the
 						reference set I used the <strong>longitude</strong> and
 						<strong>latitude</strong>
 						data for each station. These data points are the request parameters
@@ -648,11 +648,11 @@
 					<p>
 						Next step is to select the <strong>best</strong> smoothing function.
 						This is a model selection task: pick the member of a family of
-						smoothers the best predicts unseen data, using cross-validation.
+						smoothers that best predicts unseen data, using cross-validation.
 					</p>
 					<p>
 						As in the original article, the 2 smoothers that I evaluated are
-						<code>Harmonic Regression</code>. and
+						<code>Harmonic Regression</code> and
 						<code>Locally weighted regression</code>
 					</p>
 
@@ -666,7 +666,7 @@
 						>:
 						<blockquote>
 							<em
-								>Harmonic Regerssion models the climatological curve as a
+								>Harmonic Regression models the climatological curve as a
 								<strong>sum of sine/cosine pairs</strong>
 								with a 366-day period.</em
 							>
@@ -718,7 +718,7 @@
 						</div>
 					</details>
 					<p>
-						The transformed data is used in the cross-valiation process. Bellow
+						The transformed data is used in the cross-validation process. Below
 						are some useful settings:
 					</p>
 					<div class="code-demo">
@@ -757,8 +757,8 @@
 					</details>
 					<p>Again, from the original article:</p>
 					<blockquote>
-						To pick K we fit on the daily data directly (not an
-						already-aggregated climatology), using k-fold cross-validation split
+						To find the best <code>K</code> we fit on the daily data directly (not an
+						already-aggregated climatology), using <code>k-fold cross-validation</code> split
 						by year, so a given year's 365/366 days stay together, fully in
 						training or fully in test.
 					</blockquote>
@@ -885,7 +885,7 @@
 						of the fraction is a hyperparameter of the model.
 					</p>
 					<p>
-						Specifically, in the statsmodel package(
+						Specifically, in the statsmodels package(
 						<code>statsmodels.api.nonparametric.lowess</code>
 						) this parameter is named <code>frac</code>:
 						<blockquote>
@@ -926,7 +926,7 @@
 						</div>
 					</details>
 					<p>
-						Note: the <code>statsmodel lowess</code> implementation take a
+						Note: the <code>statsmodels lowess</code> implementation takes a
 						second (hyper)parameter <code>it</code>. If <code>it > 1</code>,
 						then further weighted local linear regressions are performed. This
 						is most useful when the noise has "extremely heavy tails" (Cauchy
@@ -957,7 +957,7 @@
 					<p>
 						It is easy to see that the best value is close to 0.05. Again,
 						cross-validation will tell us what the best value is. <br>
-						I followed the same process as in the harmonic regression, expept of
+						I followed the same process as in the harmonic regression, except of
 						course now the aim is to find the best value for the
 						<code>frac</code>
 						hyperparameter.
@@ -981,7 +981,7 @@
 						</div>
 					</details>
 					<p>
-						Note: <code>statsmodel lowess</code> doesn't have a 'predict'
+						Note: <code>statsmodels lowess</code> doesn't have a 'predict'
 						method, so we predict using linear interpolation
 						<code>np.interp</code>.
 					</p>
@@ -1012,7 +1012,7 @@
 						Best national value is <code>frac=0.05</code>. The number of data
 						points used in each local regression is
 						<code>period*national_loess_best_frac=18.3</code>.
-						<br>Note however, theat there isn't a pronounced difference in the
+						<br>Note however, that there isn't a pronounced difference in the
 						error between this and adjacent values.
 					</p>
 					<div class="block">
@@ -1120,7 +1120,7 @@
 						I followed the original article's process for drawing the chart
 						using <code>python's matplotlib</code> (instead of
 						<code>ggplot</code>).<br>
-						You can check the code for that in the colab notebool that is
+						You can check the code for that in the colab notebook that is
 						available at github.
 					</p>
 					<div class="block">
@@ -1143,7 +1143,7 @@
 						The noise/jagged line tracks the <code>mean temperature</code> for
 						each day in the year 2025 (Open-Meteo data).<br>
 						The red and blue colored peaks represent the points in the 2025
-						daily data the fall outside the typical range of the climatolgy
+						daily data that fall outside the typical range of the climatology
 						normal.
 					</p>
 					<!--DEMO-->
@@ -1151,9 +1151,9 @@
 					<p>
 						Since our historical data goes back to only 2012, the chart doesn't
 						paint as dramatic a picture as in the original article. <br>
-						In total there were 9 days in 2025 when the mean temperature fell
+						In total there were 10 days in 2025 when the mean temperature fell
 						outside the typical range: 9 instances when the temperature exceeded
-						the 95th quantile and 1 instance when it fell bellow the 5th
+						the 95th quantile and 1 instance when it fell below the 5th
 						quantile.
 					</p>
 					<details>

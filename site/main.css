@@ -759,10 +759,10 @@ details > summary {
 .code-copy-button {
 	display: none;
 	position: absolute;
-	top: 0;
+	top: 10%;
 	right: 0;
 	border: 0;
-	margin-top: 0.125rem;
+	/* margin-top: 0.125rem; */
 	margin-right: 0.2rem;
 	background-color: rgba(0, 0, 0, 0);
 	z-index: 3;
