@@ -7,7 +7,7 @@
 		<meta name="text-scale" content="scale">
 		<meta
 			name="description"
-			content="Author: Fani Akritidou, use Python, statsmodels.api, harmonic regression, loess regression, matplotlib.pyplot"
+			content="Author: Fani Akritidou, Create a climatology chart for Greece using Python, statsmodels.api, harmonic regression, loess regression, matplotlib.pyplot"
 		>
 		<title>
 			Recreating a Data-Driven Temperature Normal for Greece in Python
@@ -21,16 +21,24 @@
 		<!--
   <link rel="manifest" href="/site.webmanifest">
 
-  <link rel="canonical" href="https://web.site/page">
+  <link rel="canonical" href="https://fanyak.github.io/portfolio">
   <link rel="alternate" type="text/markdown" href="https://web.site/page.md">
-  <link rel="me" href="https://mastodon.social/@username">
+  <link rel="me" href="https://github.com/fanyak">
   <link rel="site.standard.publication" href="at://[DID]/site.standard.publication/[RKEY]">
+		-->
 
-  <meta name="description" content="Page description">
-  <meta property="og:image" content="https://web.site/sm.jpg">
-  <meta property="og:url" content="https://web.site/page">
-  <meta name="theme-color" content="#FF5302">
-  <meta property="fediverse:creator" content="@user@mastodon.social" > -->
+		<meta
+			property="og:image"
+			content="https://fanyak.github.io/portfolio/assets/gtnom_hero.png"
+		>
+		<meta
+			property="og:url"
+			content="https://fanyak.github.io/portfolio/greece-temperature-normals-open-meteo.html#getting-data-for-greece"
+		>
+
+		<meta name="theme-color" content="#f4f1ed">
+
+		<meta property="fediverse:creator" content="https://github.com/fanyak">
 	</head>
 
 	<body class="auto-dark">
@@ -655,34 +663,34 @@
 						As Dominic Royé
 						<a
 							href="https://dominicroye.github.io/blog/spain-temperature-normals-openmeteo/#step-4-how-much-should-we-smooth"
-							target="_new"
+							target="new"
 							>explains</a
 						>:
-						<blockquote>
-							<em
-								>Harmonic Regression models the climatological curve as a
-								<strong>sum of sine/cosine pairs</strong>
-								with a 366-day period.</em
-							>
-						</blockquote>
-
-						<p>
-							The <em>sum of the sine/cosine pairs</em> are linear predictors,
-							as in OLS. An instance of this model takes two parameters:
-						</p>
-						<ul>
-							<li>
-								<code>K</code>, which represents the harmonic order (e.g., 1 for
-								1st harmonic, 2 for 2nd, etc). <br>
-								The higher <code>K</code> is, the less smoothing we get, and the
-								higher the variance of the model.
-							</li>
-							<li>
-								<code>period</code>, the period of the cycle. In our case,
-								period is fixed at 366 days to account for leap years.
-							</li>
-						</ul>
 					</p>
+					<blockquote>
+						<em
+							>Harmonic Regression models the climatological curve as a
+							<strong>sum of sine/cosine pairs</strong>
+							with a 366-day period.</em
+						>
+					</blockquote>
+					<p>
+						The <em>sum of the sine/cosine pairs</em> are linear predictors, as
+						in OLS. An instance of this model takes two parameters:
+					</p>
+					<ul>
+						<li>
+							<code>K</code>, which represents the harmonic order (e.g., 1 for
+							1st harmonic, 2 for 2nd, etc). <br>
+							The higher <code>K</code> is, the less smoothing we get, and the
+							higher the variance of the model.
+						</li>
+						<li>
+							<code>period</code>, the period of the cycle. In our case, period
+							is fixed at 366 days to account for leap years.
+						</li>
+					</ul>
+
 					<p>
 						While <code>period</code> is fixed, parameter <code>k</code> is a
 						hyperparameter that we need to tune in order to get the model that
@@ -760,23 +768,23 @@
 					<p>
 						For each chosen value of <code>K</code> we repeat the following
 						process <code>n_split</code> times:
-						<ol>
-							<li>
-								create a new OLS model for the selected <code>K</code> order,
-							</li>
-							<li>
-								hold out the days of the current iteration's test fold years,
-							</li>
-							<li>fit the model on the days of the training folds' years,</li>
-							<li>use the fitted model to predict the held-out days,</li>
-							<li>
-								estimate the model's error of the n<sup>th</sup>
-								iteration using the
-								<code>RMSE</code>
-								loss function.
-							</li>
-						</ol>
 					</p>
+					<ol>
+						<li>
+							create a new OLS model for the selected <code>K</code> order,
+						</li>
+						<li>
+							hold out the days of the current iteration's test fold years,
+						</li>
+						<li>fit the model on the days of the training folds' years,</li>
+						<li>use the fitted model to predict the held-out days,</li>
+						<li>
+							estimate the model's error of the n<sup>th</sup>
+							iteration using the
+							<code>RMSE</code>
+							loss function.
+						</li>
+					</ol>
 					<p>
 						Finally, the estimated performances (RMSE) of all the
 						<code>n_split</code>
@@ -883,14 +891,14 @@
 						Specifically, in the statsmodels package(
 						<code>statsmodels.api.nonparametric.lowess</code>
 						) this parameter is named <code>frac</code>:
-						<blockquote>
-							Suppose the input data has N points. The algorithm works by
-							estimating the smooth y_i by taking the frac*N closest points to
-							(x_i,y_i) based on their x values and estimating y_i using a
-							weighted linear regression. The weight for (x_j,y_j) is tricube
-							function applied to abs(x_i-x_j).
-						</blockquote>
 					</p>
+					<blockquote>
+						Suppose the input data has N points. The algorithm works by
+						estimating the smooth y_i by taking the frac*N closest points to
+						(x_i,y_i) based on their x values and estimating y_i using a
+						weighted linear regression. The weight for (x_j,y_j) is tricube
+						function applied to abs(x_i-x_j).
+					</blockquote>
 					<p>
 						The <code>loess regression</code> runs on data structured as
 						<strong>climatology</strong>, meaning that instead of the raw daily
@@ -931,12 +939,12 @@
 					<p>
 						The <code>frac</code> parameter controls roughly how much of the
 						data is used locally for each fitted point.
-						<ul>
-							<li>frac=0.01 → follows the data closely, potentially noisy</li>
-							<li>frac=0.1 → moderate smoothing</li>
-							<li>frac=0.3 → very smooth, potentially hiding real structure</li>
-						</ul>
 					</p>
+					<ul>
+						<li>frac=0.01 → follows the data closely, potentially noisy</li>
+						<li>frac=0.1 → moderate smoothing</li>
+						<li>frac=0.3 → very smooth, potentially hiding real structure</li>
+					</ul>
 					<div class="block">
 						<div class="image-container">
 							<figure>
@@ -1304,7 +1312,6 @@
 		</script>
 
 		<textarea
-			type="text"
 			id="cp"
 			style="position:fixed; left:-100px; white-space: pre-line;"
 			aria-label="copy text"
