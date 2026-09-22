@@ -70,6 +70,26 @@
 						<span class="meta-separator">•</span>
 
 						<span>Data Analysis</span>
+
+						<span class="meta-separator">•</span>
+
+						<details class="menu">
+							<summary>
+								<span>contents</span>
+							</summary>
+							<nav>
+								<a href="#setting_the_goal">Setting the goal</a>
+								<a href="#getting-data-for-greece">Getting data for Greece</a>
+								<a href="#daily-climatology">Daily climatolog (2012-2023)</a>
+								<a href="#daily-climatology">Daily climatolog (2012-2023)</a>
+								<a href="#smooth-the-curve">Smooth the curve</a>
+								<a href="#compare-results">Compare results</a>
+								<a href="#creating-the-national-climatology-chart"
+									>Creating the national climatology chart</a
+								>
+								<a href="#final-notes">Final notes</a>
+							</nav>
+						</details>
 					</div>
 				</header>
 
@@ -100,7 +120,7 @@
 						as in building complex charts with Python. -->
 					</p>
 					<!-- Setting the Goal-->
-					<h2>Setting the Goal</h2>
+					<h2 id="setting_the_goal">Setting the Goal</h2>
 					<p>
 						Comparing <strong>daily</strong> temperature data provides little
 						information about how mean temperatures actually differ between
@@ -195,7 +215,7 @@
 						</em>
 					</p>
 					<!-- Getting the data -->
-					<h2>Getting Data for Greece</h2>
+					<h2 id="getting-data-for-greece">Getting Data for Greece</h2>
 					<p>
 						The
 						<a
@@ -571,7 +591,7 @@
 						</pre>
 					</div>
 
-					<h2>Daily Climatology (2012-2023)</h2>
+					<h2 id="daily-climatology">Daily Climatology (2012-2023)</h2>
 					<p>
 						To create a daily climatology we need a
 						<strong>central reference</strong>
@@ -618,7 +638,7 @@
 						</div>
 					</div>
 
-					<h2>Smooth the Curve</h2>
+					<h2 id="smooth-the-curve">Smooth the Curve</h2>
 					<p>
 						Next step is to select the <strong>best</strong> smoothing function.
 						This is a model selection task: pick the member of a family of
@@ -1006,7 +1026,7 @@
 							</figure>
 						</div>
 					</div>
-					<h2>Compare Results</h2>
+					<h2 id="compare-results">Compare Results</h2>
 					<p>
 						Here is a plot showing the smoothed national data using Harmonic and
 						Loess vs the raw data.
@@ -1027,7 +1047,9 @@
 					</div>
 					<p>The Loess and Harmonic curves all but overlap!</p>
 
-					<h2>Creating the National Climatology Chart</h2>
+					<h2 id="creating-the-national-climatology-chart">
+						Creating the National Climatology Chart
+					</h2>
 					<p>
 						Since the harmonic best value <code>K = 4</code> agrees with the
 						original article's results, I used the harmonic smoother to create
@@ -1127,7 +1149,7 @@
 						normal.
 					</p>
 					<!--DEMO-->
-					<h2>Final Notes</h2>
+					<h2 id="final-notes">Final Notes</h2>
 					<p>
 						Since our historical data goes back to only 2012, the chart doesn't
 						paint as dramatic a picture as in the original article. <br>

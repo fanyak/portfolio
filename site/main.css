@@ -43,7 +43,7 @@
 	--text-code: #161616;
 	--text-gradient-highlight: 219, 209, 209;
 	--border: #e6e6e6;
-	--spacing: .25rem;
+	--spacing: 0.25rem;
 
 	--nav-text: #1a1a1a;
 	--nav-bg: #ffffff;
@@ -1091,8 +1091,8 @@ figcaption {
 }
 
 .size-5 {
-    width: calc(var(--spacing) * 5);
-    height: calc(var(--spacing) * 5);
+	width: calc(var(--spacing) * 5);
+	height: calc(var(--spacing) * 5);
 }
 
 /* ====================================
@@ -1120,5 +1120,35 @@ footer {
 
 	path.sun-icon {
 		display: block;
+	}
+}
+/* ====================================
+		menu 
+===================================== */
+details.menu {
+	summary {
+		margin: auto;
+		font-size: 0.9rem;
+		font-family: var(--font-ui);
+		color: var(--text-muted);
+	}
+	/* summary::marker,
+	summary::-webkit-details-marker {
+		display: none;
+		color: transparent;
+	} */
+	nav {
+		position: absolute;
+		background-color: var(--code-bg);
+		padding: 1rem;
+
+		a {
+			display: block;
+			padding: 0.5rem;
+			color: var(--text);
+		}
+		a:hover {
+			color: rgb(237, 104, 43, 1) /*rgb(26, 26, 26, 1)  #ffffff */;
+		}
 	}
 }
