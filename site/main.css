@@ -43,6 +43,7 @@
 	--text-code: #161616;
 	--text-gradient-highlight: 219, 209, 209;
 	--border: #e6e6e6;
+	--spacing: .25rem;
 
 	--nav-text: #1a1a1a;
 	--nav-bg: #ffffff;
@@ -1019,22 +1020,30 @@ details > summary {
 		--text-code-method: rgb(178 187 81);
 		--text-code-varchar: rgb(219, 139, 219);
 
+		.visualization {
+			background: #181818;
+		}
+
+		.code-demo-header {
+			background: #202020;
+		}
+
+		.demo,
+		.range-display {
+			background: #181818;
+		}
+
 		.theme-switcher {
 			--icon-color: #fff;
 		}
-	}
 
-	.auto-dark .demo,
-	.auto-dark .range-display {
-		background: #181818;
-	}
+		footer path.moon-icon {
+			display: block;
+		}
 
-	.auto-dark .visualization {
-		background: #181818;
-	}
-
-	.auto-dark .code-demo-header {
-		background: #202020;
+		footer path.sun-icon {
+			display: none;
+		}
 	}
 }
 
@@ -1081,6 +1090,11 @@ figcaption {
 	color: var(--text-muted);
 }
 
+.size-5 {
+    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing) * 5);
+}
+
 /* ====================================
 		footer 
 ===================================== */
@@ -1098,5 +1112,13 @@ footer {
 
 	.theme-switcher svg {
 		color: var(--icon-color);
+	}
+
+	path.moon-icon {
+		display: none;
+	}
+
+	path.sun-icon {
+		display: block;
 	}
 }
