@@ -74,6 +74,10 @@
 
 	--font-code:
 		"JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+	.theme-switcher {
+		--icon-color: #1a1a1a;
+	}
 }
 
 /* =========================================
@@ -1014,6 +1018,10 @@ details > summary {
 		--text-code-equal-sign: skyblue;
 		--text-code-method: rgb(178 187 81);
 		--text-code-varchar: rgb(219, 139, 219);
+
+		.theme-switcher {
+			--icon-color: #fff;
+		}
 	}
 
 	.auto-dark .demo,
@@ -1071,4 +1079,24 @@ figcaption {
 	padding-top: 0.8rem;
 	font-size: 0.9rem;
 	color: var(--text-muted);
+}
+
+/* ====================================
+		footer 
+===================================== */
+footer {
+	display: flex;
+	max-width: 80vw;
+	margin: 1rem auto;
+	justify-content: space-between;
+
+	.theme-switcher {
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+	}
+
+	.theme-switcher svg {
+		color: var(--icon-color);
+	}
 }
